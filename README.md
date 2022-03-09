@@ -12,6 +12,21 @@
 This is the 2nd iteration of the Todo App as part of my onboarding process with LawAdvisors Ventures.
 This readme file is still a work in progress and I intend to put my thoughts and decisions I made on this readme file.
 
+## My Idea about the Program
+
+I imagine the app having 2 sub apps:
+ - Todo Client - stores the Users tables
+ - Todo API - stores the Lists and Todos tables
+
+![Alt text](/readme_assets/Todo%20App%20V2%20Design%20Idea.png?raw=true "Todo App V2 Design Idea")
+
+## My Progress
+
+Here are the mix commands I used to create the projects:
+* Todo API:
+    - mix phx.new todo_api --no-html --no-assets --no-live --no-dashboard
+    - 
+
 ## Getting Started <a name = "getting_started"></a>
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
