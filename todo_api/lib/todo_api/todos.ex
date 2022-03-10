@@ -28,7 +28,7 @@ defmodule TodoApi.Todos do
         |> Repo.all()
 
       {:ok, todos}
-    rescue
+    catch
       _ -> {:error, "Cannot get the list of todos"}
     end
   end
@@ -67,15 +67,14 @@ defmodule TodoApi.Todos do
 
   """
   def create_todo(%List{} = list, attrs \\ %{}) do
-    case list
-         |> Ecto.build_assoc(:todos)
-         |> Todo.changeset(attrs)
-         |> Repo.insert() do
-      {:ok, todo} ->
-        {:ok, todo}
-
-      {:error, _reason} ->
-        {:error, "Cannot create the todo"}
+    with {:ok, todo} <-
+           list
+           |> Ecto.build_assoc(:todos)
+           |> Todo.changeset(attrs)
+           |> Repo.insert() do
+      {:ok, todo}
+    else
+      _ -> {:error, "Cannot create the todo"}
     end
   end
 
@@ -92,16 +91,11 @@ defmodule TodoApi.Todos do
 
   """
   def update_todo(%Todo{} = todo, attrs) do
-    get_todo(todo.id)
-
-    case todo
-         |> Todo.changeset(attrs)
-         |> Repo.update() do
-      {:ok, todo} ->
-        {:ok, todo}
-
-      {:error, _reason} ->
-        {:error, "Cannot update the todo"}
+    with {:ok, todo} <- get_todo(todo.id),
+         {:ok, updated_todo} <- todo |> Todo.changeset(attrs) |> Repo.update() do
+      {:ok, updated_todo}
+    else
+      {:error, _reason} -> {:error, "Cannot update the todo"}
     end
   end
 
@@ -118,10 +112,10 @@ defmodule TodoApi.Todos do
 
   """
   def delete_todo(%Todo{} = todo) do
-    get_todo(todo.id)
-
-    case Repo.delete(todo) do
-      {:ok, todo} -> {:ok, "'#{todo.description}' todo is deleted"}
+    with {:ok, todo} <- get_todo(todo.id),
+         {:ok, todo} <- Repo.delete(todo) do
+      {:ok, "'#{todo.description}' todo is deleted"}
+    else
       {:error, _reason} -> {:error, "Cannot delete the todo"}
     end
   end

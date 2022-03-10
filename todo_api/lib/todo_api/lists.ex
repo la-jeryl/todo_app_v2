@@ -40,7 +40,7 @@ defmodule TodoApi.Lists do
       iex> get_list(123)
       {:ok, %List{}}
 
-      iex> get_list!(456)
+      iex> get_list(456)
       {:error, "Todo list not found"}
 
   """
@@ -88,14 +88,12 @@ defmodule TodoApi.Lists do
 
   """
   def update_list(%List{} = list, attrs) do
-    get_list(list.id)
+    # get_list(list.id)
 
-    case list
-         |> List.changeset(attrs)
-         |> Repo.update() do
-      {:ok, list} ->
-        {:ok, list}
-
+    with {:ok, list} <- get_list(list.id),
+         {:ok, updated_list} <- list |> List.changeset(attrs) |> Repo.update() do
+      {:ok, updated_list}
+    else
       {:error, _reason} ->
         {:error, "Cannot update the list"}
     end
@@ -114,10 +112,10 @@ defmodule TodoApi.Lists do
 
   """
   def delete_list(%List{} = list) do
-    get_list(list.id)
-
-    case Repo.delete(list) do
-      {:ok, list} -> {:ok, "'#{list.list_name}' todo list is deleted"}
+    with {:ok, list} <- get_list(list.id),
+         {:ok, list} <- Repo.delete(list) do
+      {:ok, "'#{list.list_name}' todo list is deleted"}
+    else
       {:error, _reason} -> {:error, "Cannot delete the todo list"}
     end
   end
