@@ -20,12 +20,18 @@ I imagine the app having 2 sub apps:
 
 ![Alt text](/readme_assets/Todo%20App%20V2%20Design%20Idea.png?raw=true "Todo App V2 Design Idea")
 
+Here's my plan for the Todo API:
+ - GET - /lists
+ - GET POST PUT DELETE - /lists/:list_id
+ - GET - /lists/:id/todos
+ - GET POST PUT DELETE - /lists/:id/todos/:todo_id
+
 ## My Progress
 
 Here are the mix commands I used to create the projects:
 * Todo API:
     - mix phx.new todo_api --no-html --no-assets --no-live --no-dashboard
-    - 
+    - mix phx.gen.json Lists List lists user_id:integer list_name:string
 
 ## Getting Started <a name = "getting_started"></a>
 
