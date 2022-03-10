@@ -7,6 +7,7 @@ defmodule TodoApi.Todos do
   alias TodoApi.Repo
 
   alias TodoApi.Todos.Todo
+  alias TodoApi.Lists.List
 
   @doc """
   Returns the list of todos.
@@ -49,8 +50,9 @@ defmodule TodoApi.Todos do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_todo(attrs \\ %{}) do
-    %Todo{}
+  def create_todo(%List{} = list, attrs \\ %{}) do
+    list
+    |> Ecto.build_assoc(:todos)
     |> Todo.changeset(attrs)
     |> Repo.insert()
   end

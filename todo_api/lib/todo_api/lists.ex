@@ -35,7 +35,11 @@ defmodule TodoApi.Lists do
       ** (Ecto.NoResultsError)
 
   """
-  def get_list!(id), do: Repo.get!(List, id)
+  def get_list!(id) do
+    List
+    |> Repo.get!(id)
+    |> Repo.preload(:todos)
+  end
 
   @doc """
   Creates a list.
@@ -53,6 +57,10 @@ defmodule TodoApi.Lists do
     %List{}
     |> List.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, %List{} = list} -> {:ok, Repo.preload(list, :todos)}
+      error -> error
+    end
   end
 
   @doc """
