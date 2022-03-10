@@ -8,8 +8,9 @@ defmodule TodoApiWeb.Router do
   scope "/api", TodoApiWeb do
     pipe_through :api
 
-    resources "/lists", ListController
-    resources "/todos", TodoController
+    resources "/lists", ListController, except: [:new, :edit] do
+      resources "/todos", TodoController, except: [:new, :edit]
+    end
   end
 
   # Enables the Swoosh mailbox preview in development.
