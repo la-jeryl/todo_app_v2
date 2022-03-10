@@ -9,6 +9,7 @@ defmodule TodoApiWeb.Router do
     pipe_through :api
 
     resources "/lists", ListController
+    resources "/todos", TodoController
   end
 
   # Enables the Swoosh mailbox preview in development.
