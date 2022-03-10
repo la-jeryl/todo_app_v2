@@ -18,7 +18,9 @@ defmodule TodoApi.Lists do
 
   """
   def list_lists do
-    Repo.all(List)
+    List
+    |> Repo.all()
+    |> Repo.preload(:todos)
   end
 
   @doc """
