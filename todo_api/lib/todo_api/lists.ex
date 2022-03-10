@@ -9,38 +9,48 @@ defmodule TodoApi.Lists do
   alias TodoApi.Lists.List
 
   @doc """
-  Returns the list of lists.
+  Returns the list of todo lists.
 
   ## Examples
 
       iex> list_lists()
-      [%List{}, ...]
+      {:ok, [%List{}, ...]}
 
+      iex> list_lists()
+      {:error, "Cannot get the list of todo lists"}
   """
   def list_lists do
-    List
-    |> Repo.all()
-    |> Repo.preload(:todos)
+    try do
+      lists =
+        List
+        |> Repo.all()
+        |> Repo.preload(:todos)
+
+      {:ok, lists}
+    catch
+      _ -> {:error, "Cannot get the list of todo lists"}
+    end
   end
 
   @doc """
-  Gets a single list.
-
-  Raises `Ecto.NoResultsError` if the List does not exist.
+  Gets a single list based on the id.
 
   ## Examples
 
-      iex> get_list!(123)
-      %List{}
+      iex> get_list(123)
+      {:ok, %List{}}
 
       iex> get_list!(456)
-      ** (Ecto.NoResultsError)
+      {:error, "Todo list not found"}
 
   """
-  def get_list!(id) do
-    List
-    |> Repo.get!(id)
-    |> Repo.preload(:todos)
+  def get_list(id) do
+    case List
+         |> Repo.get(id)
+         |> Repo.preload(:todos) do
+      nil -> {:error, "Todo list not found"}
+      list -> {:ok, list}
+    end
   end
 
   @doc """
@@ -61,7 +71,7 @@ defmodule TodoApi.Lists do
     |> Repo.insert()
     |> case do
       {:ok, %List{} = list} -> {:ok, Repo.preload(list, :todos)}
-      error -> error
+      _ -> {:error, "Cannot create the todo list"}
     end
   end
 
@@ -74,13 +84,21 @@ defmodule TodoApi.Lists do
       {:ok, %List{}}
 
       iex> update_list(list, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      {:error, "Cannot update the list"}
 
   """
   def update_list(%List{} = list, attrs) do
-    list
-    |> List.changeset(attrs)
-    |> Repo.update()
+    get_list(list.id)
+
+    case list
+         |> List.changeset(attrs)
+         |> Repo.update() do
+      {:ok, list} ->
+        {:ok, list}
+
+      {:error, _reason} ->
+        {:error, "Cannot update the list"}
+    end
   end
 
   @doc """
@@ -96,7 +114,12 @@ defmodule TodoApi.Lists do
 
   """
   def delete_list(%List{} = list) do
-    Repo.delete(list)
+    get_list(list.id)
+
+    case Repo.delete(list) do
+      {:ok, list} -> {:ok, "'#{list.list_name}' todo list is deleted"}
+      {:error, _reason} -> {:error, "Cannot delete the todo list"}
+    end
   end
 
   @doc """

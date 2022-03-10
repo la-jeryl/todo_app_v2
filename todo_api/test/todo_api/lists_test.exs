@@ -9,27 +9,31 @@ defmodule TodoApi.ListsTest do
     import TodoApi.ListsFixtures
 
     @invalid_attrs %{list_name: nil, user_id: nil}
+    @valid_attrs %{list_name: "some list_name", user_id: 42}
 
     test "list_lists/0 returns all lists" do
       list = list_fixture()
-      assert Lists.list_lists() == [list]
+      assert Lists.list_lists() == {:ok, [list]}
     end
 
-    test "get_list!/1 returns the list with given id" do
+    test "get_list/1 returns the list with given id" do
       list = list_fixture()
-      assert Lists.get_list!(list.id) == list
+      assert Lists.get_list(list.id) == {:ok, list}
+    end
+
+    test "get_list/1 returns an error when not found" do
+      # 1 is just a random number. No list was created on this test.
+      assert {:error, "Todo list not found"} == Lists.get_list(1)
     end
 
     test "create_list/1 with valid data creates a list" do
-      valid_attrs = %{list_name: "some list_name", user_id: 42}
-
-      assert {:ok, %List{} = list} = Lists.create_list(valid_attrs)
+      assert {:ok, %List{} = list} = Lists.create_list(@valid_attrs)
       assert list.list_name == "some list_name"
       assert list.user_id == 42
     end
 
-    test "create_list/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Lists.create_list(@invalid_attrs)
+    test "create_list/1 with invalid data returns error message" do
+      assert {:error, "Cannot create the todo list"} = Lists.create_list(@invalid_attrs)
     end
 
     test "update_list/2 with valid data updates the list" do
@@ -43,14 +47,14 @@ defmodule TodoApi.ListsTest do
 
     test "update_list/2 with invalid data returns error changeset" do
       list = list_fixture()
-      assert {:error, %Ecto.Changeset{}} = Lists.update_list(list, @invalid_attrs)
-      assert list == Lists.get_list!(list.id)
+      assert {:error, "Cannot update the list"} = Lists.update_list(list, @invalid_attrs)
+      assert {:ok, list} == Lists.get_list(list.id)
     end
 
     test "delete_list/1 deletes the list" do
       list = list_fixture()
-      assert {:ok, %List{}} = Lists.delete_list(list)
-      assert_raise Ecto.NoResultsError, fn -> Lists.get_list!(list.id) end
+      assert {:ok, "'some list_name' todo list is deleted"} = Lists.delete_list(list)
+      assert {:error, "Todo list not found"} == Lists.get_list(list.id)
     end
 
     test "change_list/1 returns a list changeset" do
