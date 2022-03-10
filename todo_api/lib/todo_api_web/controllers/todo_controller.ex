@@ -3,19 +3,22 @@ defmodule TodoApiWeb.TodoController do
 
   alias TodoApi.Todos
   alias TodoApi.Todos.Todo
+  alias TodoApi.Lists
 
   action_fallback TodoApiWeb.FallbackController
 
-  def index(conn, _params) do
-    todos = Todos.list_todos()
-    render(conn, "index.json", todos: todos)
+  def index(conn, %{"list_id" => list_id}) do
+    list = Lists.get_list!(list_id)
+    render(conn, "index.json", todos: list.todos)
   end
 
-  def create(conn, %{"todo" => todo_params}) do
-    with {:ok, %Todo{} = todo} <- Todos.create_todo(todo_params) do
+  def create(conn, %{"list_id" => list_id, "todo" => todo_params}) do
+    list = Lists.get_list!(list_id)
+
+    with {:ok, %Todo{} = todo} <- Todos.create_todo(list, todo_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", Routes.todo_path(conn, :show, todo))
+      |> put_resp_header("location", Routes.list_todo_path(conn, :show, list_id, todo))
       |> render("show.json", todo: todo)
     end
   end
