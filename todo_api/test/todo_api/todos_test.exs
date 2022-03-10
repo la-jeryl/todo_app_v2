@@ -7,30 +7,32 @@ defmodule TodoApi.TodosTest do
     alias TodoApi.Todos.Todo
 
     import TodoApi.TodosFixtures
+    import TodoApi.ListsFixtures
 
     @invalid_attrs %{description: nil, is_done: nil, priority: nil}
+    @valid_attrs %{description: "some description", is_done: true, priority: 42}
 
     test "list_todos/0 returns all todos" do
       todo = todo_fixture()
-      assert Todos.list_todos() == [todo]
+      assert Todos.list_todos() == {:ok, [todo]}
     end
 
-    test "get_todo!/1 returns the todo with given id" do
+    test "get_todo/1 returns the todo with given id" do
       todo = todo_fixture()
-      assert Todos.get_todo!(todo.id) == todo
+      assert Todos.get_todo(todo.id) == {:ok, todo}
     end
 
     test "create_todo/1 with valid data creates a todo" do
-      valid_attrs = %{description: "some description", is_done: true, priority: 42}
-
-      assert {:ok, %Todo{} = todo} = Todos.create_todo(valid_attrs)
+      list = list_fixture()
+      assert {:ok, %Todo{} = todo} = Todos.create_todo(list, @valid_attrs)
       assert todo.description == "some description"
       assert todo.is_done == true
       assert todo.priority == 42
     end
 
     test "create_todo/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Todos.create_todo(@invalid_attrs)
+      list = list_fixture()
+      assert {:error, "Cannot create the todo"} = Todos.create_todo(list, @invalid_attrs)
     end
 
     test "update_todo/2 with valid data updates the todo" do
@@ -45,14 +47,14 @@ defmodule TodoApi.TodosTest do
 
     test "update_todo/2 with invalid data returns error changeset" do
       todo = todo_fixture()
-      assert {:error, %Ecto.Changeset{}} = Todos.update_todo(todo, @invalid_attrs)
-      assert todo == Todos.get_todo!(todo.id)
+      assert {:error, "Cannot update the todo"} = Todos.update_todo(todo, @invalid_attrs)
+      assert {:ok, todo} == Todos.get_todo(todo.id)
     end
 
     test "delete_todo/1 deletes the todo" do
       todo = todo_fixture()
-      assert {:ok, %Todo{}} = Todos.delete_todo(todo)
-      assert_raise Ecto.NoResultsError, fn -> Todos.get_todo!(todo.id) end
+      assert {:ok, "'some description' todo is deleted"} = Todos.delete_todo(todo)
+      assert {:error, "Todo not found"} == Todos.get_todo(todo.id)
     end
 
     test "change_todo/1 returns a todo changeset" do

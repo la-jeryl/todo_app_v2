@@ -8,14 +8,23 @@ defmodule TodoApi.TodosFixtures do
   Generate a todo.
   """
   def todo_fixture(attrs \\ %{}) do
-    {:ok, todo} =
+    {:ok, list} =
+      attrs
+      |> Enum.into(%{
+        list_name: "some list_name",
+        user_id: 42
+      })
+      |> TodoApi.Lists.create_list()
+
+    params =
       attrs
       |> Enum.into(%{
         description: "some description",
         is_done: true,
         priority: 42
       })
-      |> TodoApi.Todos.create_todo()
+
+    {:ok, todo} = TodoApi.Todos.create_todo(list, params)
 
     todo
   end
