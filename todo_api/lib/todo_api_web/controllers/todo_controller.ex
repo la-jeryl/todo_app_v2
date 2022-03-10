@@ -8,45 +8,48 @@ defmodule TodoApiWeb.TodoController do
   action_fallback TodoApiWeb.FallbackController
 
   def index(conn, %{"list_id" => list_id}) do
-    list = Lists.get_list!(list_id)
-    render(conn, "index.json", todos: list.todos)
+    with {:ok, list} <- Lists.get_list(list_id) do
+      render(conn, "index.json", todos: list.todos)
+    else
+      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
+    end
   end
 
   def create(conn, %{"list_id" => list_id, "todo" => todo_params}) do
-    list = Lists.get_list!(list_id)
-
-    with {:ok, %Todo{} = todo} <- Todos.create_todo(list, todo_params) do
+    with {:ok, list} = Lists.get_list(list_id),
+         {:ok, %Todo{} = todo} <- Todos.create_todo(list, todo_params) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.list_todo_path(conn, :show, list_id, todo))
       |> render("show.json", todo: todo)
     else
-      {:error, reason} -> render(conn, "error.json", error: reason)
+      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 
   def show(conn, %{"id" => id}) do
-    todo = Todos.get_todo!(id)
-    render(conn, "show.json", todo: todo)
+    with {:ok, todo} <- Todos.get_todo(id) do
+      render(conn, "show.json", todo: todo)
+    else
+      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
+    end
   end
 
   def update(conn, %{"id" => id, "todo" => todo_params}) do
-    todo = Todos.get_todo!(id)
-
-    with {:ok, %Todo{} = todo} <- Todos.update_todo(todo, todo_params) do
+    with {:ok, todo} <- Todos.get_todo(id),
+         {:ok, %Todo{} = todo} <- Todos.update_todo(todo, todo_params) do
       render(conn, "show.json", todo: todo)
     else
-      {:error, reason} -> render(conn, "error.json", error: reason)
+      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    todo = Todos.get_todo!(id)
-
-    with {:ok, %Todo{}} <- Todos.delete_todo(todo) do
+    with {:ok, todo} <- Todos.get_todo(id),
+         {:ok, _todo} <- Todos.delete_todo(todo) do
       render(conn, "delete_todo.json", message: "'#{todo.description}' todo was deleted.")
     else
-      {:error, reason} -> render(conn, "error.json", error: reason)
+      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 end

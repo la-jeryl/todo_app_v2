@@ -2,6 +2,7 @@ defmodule TodoApiWeb.TodoControllerTest do
   use TodoApiWeb.ConnCase
 
   import TodoApi.TodosFixtures
+  import TodoApi.ListsFixtures
 
   alias TodoApi.Todos.Todo
 
@@ -22,18 +23,20 @@ defmodule TodoApiWeb.TodoControllerTest do
   end
 
   describe "index" do
-    test "lists all todos", %{conn: conn} do
-      conn = get(conn, Routes.todo_path(conn, :index))
+    test "lists all todos from a list", %{conn: conn} do
+      conn = get(conn, Routes.list_path(conn, :index))
       assert json_response(conn, 200)["data"] == []
     end
   end
 
   describe "create todo" do
     test "renders todo when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.todo_path(conn, :create), todo: @create_attrs)
+      list = list_fixture()
+      conn = post(conn, Routes.list_todo_path(conn, :create, list.id), todo: @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
+      todo = json_response(conn, 201)["data"]
 
-      conn = get(conn, Routes.todo_path(conn, :show, id))
+      conn = get(conn, Routes.list_todo_path(conn, :show, list.id, id))
 
       assert %{
                "id" => ^id,
@@ -44,8 +47,9 @@ defmodule TodoApiWeb.TodoControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.todo_path(conn, :create), todo: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
+      list = list_fixture()
+      conn = post(conn, Routes.list_todo_path(conn, :create, list.id), todo: @invalid_attrs)
+      assert json_response(conn, 400) == %{"error" => "Cannot create the todo"}
     end
   end
 
@@ -53,10 +57,11 @@ defmodule TodoApiWeb.TodoControllerTest do
     setup [:create_todo]
 
     test "renders todo when data is valid", %{conn: conn, todo: %Todo{id: id} = todo} do
-      conn = put(conn, Routes.todo_path(conn, :update, todo), todo: @update_attrs)
+      list = list_fixture()
+      conn = put(conn, Routes.list_todo_path(conn, :update, list.id, id), todo: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
-      conn = get(conn, Routes.todo_path(conn, :show, id))
+      conn = get(conn, Routes.list_todo_path(conn, :show, list.id, id))
 
       assert %{
                "id" => ^id,
@@ -67,8 +72,12 @@ defmodule TodoApiWeb.TodoControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, todo: todo} do
-      conn = put(conn, Routes.todo_path(conn, :update, todo), todo: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
+      list = list_fixture()
+
+      conn =
+        put(conn, Routes.list_todo_path(conn, :update, list.id, todo.id), todo: @invalid_attrs)
+
+      assert json_response(conn, 400) == %{"error" => "Cannot update the todo"}
     end
   end
 
@@ -76,12 +85,12 @@ defmodule TodoApiWeb.TodoControllerTest do
     setup [:create_todo]
 
     test "deletes chosen todo", %{conn: conn, todo: todo} do
-      conn = delete(conn, Routes.todo_path(conn, :delete, todo))
-      assert response(conn, 204)
+      list = list_fixture()
+      conn = delete(conn, Routes.list_todo_path(conn, :delete, list.id, todo.id))
+      assert json_response(conn, 200) == %{"message" => "'some description' todo was deleted."}
 
-      assert_error_sent 404, fn ->
-        get(conn, Routes.todo_path(conn, :show, todo))
-      end
+      get_conn = get(conn, Routes.list_todo_path(conn, :show, list.id, todo.id))
+      assert json_response(get_conn, 400) == %{"error" => "Todo not found"}
     end
   end
 
