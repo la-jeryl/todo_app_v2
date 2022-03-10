@@ -6,9 +6,13 @@ defmodule TodoApiWeb.ListController do
 
   action_fallback TodoApiWeb.FallbackController
 
+  @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, _params) do
-    lists = Lists.list_lists()
-    render(conn, "index.json", lists: lists)
+    with {:ok, lists} <- Lists.list_lists() do
+      render(conn, "index.json", lists: lists)
+    else
+      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
+    end
   end
 
   def create(conn, %{"list" => list_params}) do
@@ -18,34 +22,35 @@ defmodule TodoApiWeb.ListController do
       |> put_resp_header("location", Routes.list_path(conn, :show, list))
       |> render("show.json", list: list)
     else
-      {:error, reason} -> render(conn, "error.json", error: reason)
+      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 
   def show(conn, %{"id" => id}) do
-    list = Lists.get_list!(id)
-    render(conn, "show.json", list: list)
+    with {:ok, list} <- Lists.get_list(id) do
+      render(conn, "show.json", list: list)
+    else
+      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
+    end
   end
 
   def update(conn, %{"id" => id, "list" => list_params}) do
-    list = Lists.get_list!(id)
-
-    with {:ok, %List{} = list} <- Lists.update_list(list, list_params) do
+    with {:ok, list} <- Lists.get_list(id),
+         {:ok, %List{} = list} <- Lists.update_list(list, list_params) do
       render(conn, "show.json", list: list)
     else
-      {:error, reason} -> render(conn, "error.json", error: reason)
+      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    list = Lists.get_list!(id)
-
-    with {:ok, %List{}} <- Lists.delete_list(list) do
+    with {:ok, list} <- Lists.get_list(id),
+         {:ok, _list} <- Lists.delete_list(list) do
       render(conn, "delete_list_with_todos.json",
         message: "'#{list.list_name}' todo list was deleted."
       )
     else
-      {:error, reason} -> render(conn, "error.json", error: reason)
+      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 end

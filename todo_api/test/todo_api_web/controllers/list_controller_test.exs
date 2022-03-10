@@ -42,7 +42,7 @@ defmodule TodoApiWeb.ListControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.list_path(conn, :create), list: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
+      assert json_response(conn, 400) == %{"error" => "Cannot create the todo list"}
     end
   end
 
@@ -64,7 +64,7 @@ defmodule TodoApiWeb.ListControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, list: list} do
       conn = put(conn, Routes.list_path(conn, :update, list), list: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
+      assert json_response(conn, 400) == %{"error" => "Cannot update the list"}
     end
   end
 
@@ -73,11 +73,10 @@ defmodule TodoApiWeb.ListControllerTest do
 
     test "deletes chosen list", %{conn: conn, list: list} do
       conn = delete(conn, Routes.list_path(conn, :delete, list))
-      assert response(conn, 204)
+      assert response(conn, 200)
 
-      assert_error_sent 404, fn ->
-        get(conn, Routes.list_path(conn, :show, list))
-      end
+      get_conn = get(conn, Routes.list_path(conn, :show, list))
+      assert json_response(get_conn, 400) == %{"error" => "Todo list not found"}
     end
   end
 

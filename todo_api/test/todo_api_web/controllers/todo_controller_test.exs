@@ -34,7 +34,7 @@ defmodule TodoApiWeb.TodoControllerTest do
       list = list_fixture()
       conn = post(conn, Routes.list_todo_path(conn, :create, list.id), todo: @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
-      todo = json_response(conn, 201)["data"]
+      _todo = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.list_todo_path(conn, :show, list.id, id))
 
@@ -56,7 +56,7 @@ defmodule TodoApiWeb.TodoControllerTest do
   describe "update todo" do
     setup [:create_todo]
 
-    test "renders todo when data is valid", %{conn: conn, todo: %Todo{id: id} = todo} do
+    test "renders todo when data is valid", %{conn: conn, todo: %Todo{id: id} = _todo} do
       list = list_fixture()
       conn = put(conn, Routes.list_todo_path(conn, :update, list.id, id), todo: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
