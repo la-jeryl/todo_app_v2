@@ -20,6 +20,8 @@ defmodule TodoApiWeb.TodoController do
       |> put_status(:created)
       |> put_resp_header("location", Routes.list_todo_path(conn, :show, list_id, todo))
       |> render("show.json", todo: todo)
+    else
+      {:error, reason} -> render(conn, "error.json", error: reason)
     end
   end
 
@@ -33,6 +35,8 @@ defmodule TodoApiWeb.TodoController do
 
     with {:ok, %Todo{} = todo} <- Todos.update_todo(todo, todo_params) do
       render(conn, "show.json", todo: todo)
+    else
+      {:error, reason} -> render(conn, "error.json", error: reason)
     end
   end
 
@@ -40,7 +44,9 @@ defmodule TodoApiWeb.TodoController do
     todo = Todos.get_todo!(id)
 
     with {:ok, %Todo{}} <- Todos.delete_todo(todo) do
-      send_resp(conn, :no_content, "")
+      render(conn, "delete_todo.json", message: "'#{todo.description}' todo was deleted.")
+    else
+      {:error, reason} -> render(conn, "error.json", error: reason)
     end
   end
 end

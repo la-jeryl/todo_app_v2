@@ -17,6 +17,8 @@ defmodule TodoApiWeb.ListController do
       |> put_status(:created)
       |> put_resp_header("location", Routes.list_path(conn, :show, list))
       |> render("show.json", list: list)
+    else
+      {:error, reason} -> render(conn, "error.json", error: reason)
     end
   end
 
@@ -30,6 +32,8 @@ defmodule TodoApiWeb.ListController do
 
     with {:ok, %List{} = list} <- Lists.update_list(list, list_params) do
       render(conn, "show.json", list: list)
+    else
+      {:error, reason} -> render(conn, "error.json", error: reason)
     end
   end
 
@@ -37,7 +41,11 @@ defmodule TodoApiWeb.ListController do
     list = Lists.get_list!(id)
 
     with {:ok, %List{}} <- Lists.delete_list(list) do
-      send_resp(conn, :no_content, "")
+      render(conn, "delete_list_with_todos.json",
+        message: "'#{list.list_name}' todo list was deleted."
+      )
+    else
+      {:error, reason} -> render(conn, "error.json", error: reason)
     end
   end
 end

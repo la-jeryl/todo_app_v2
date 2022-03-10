@@ -18,4 +18,12 @@ defmodule TodoApiWeb.ListView do
       todos: render_many(list.todos, TodoView, "todo.json")
     }
   end
+
+  def render("delete_list_with_todos.json", %{message: message}) do
+    %{message: message}
+  end
+
+  def render("error.json", %{error: error}) do
+    %{error: error}
+  end
 end
