@@ -18,6 +18,6 @@ defmodule TodoApi.Todos.Todo do
     todo
     |> cast(attrs, [:priority, :description, :is_done])
     |> validate_required([:priority, :description, :is_done])
-    |> assoc_constraint(:poll)
+    |> assoc_constraint(:list)
   end
 end
