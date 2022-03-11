@@ -18,12 +18,12 @@ defmodule TodoApi.ListsTest do
 
     test "get_list/1 returns the list with given id" do
       list = list_fixture()
-      assert Lists.get_list(list.id) == {:ok, list}
+      assert Lists.get_list_by_id(list.id) == {:ok, list}
     end
 
-    test "get_list/1 returns an error when not found" do
+    test "get_list_by_id/1 returns an error when not found" do
       # 1 is just a random number. No list was created on this test.
-      assert {:error, "Todo list not found"} == Lists.get_list(1)
+      assert {:not_found, "Todo list not found"} == Lists.get_list_by_id(1)
     end
 
     test "create_list/1 with valid data creates a list" do
@@ -47,14 +47,14 @@ defmodule TodoApi.ListsTest do
 
     test "update_list/2 with invalid data returns error changeset" do
       list = list_fixture()
-      assert {:error, "Cannot update the list"} = Lists.update_list(list, @invalid_attrs)
-      assert {:ok, list} == Lists.get_list(list.id)
+      assert {:error, "Cannot update the todo list"} = Lists.update_list(list, @invalid_attrs)
+      assert {:ok, list} == Lists.get_list_by_id(list.id)
     end
 
     test "delete_list/1 deletes the list" do
       list = list_fixture()
       assert {:ok, "'some list_name' todo list is deleted"} = Lists.delete_list(list)
-      assert {:error, "Todo list not found"} == Lists.get_list(list.id)
+      assert {:not_found, "Todo list not found"} == Lists.get_list_by_id(list.id)
     end
 
     test "change_list/1 returns a list changeset" do
