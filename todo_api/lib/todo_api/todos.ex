@@ -36,15 +36,13 @@ defmodule TodoApi.Todos do
   @doc """
   Gets a single todo based on the id.
 
-  Raises `Ecto.NoResultsError` if the Todo does not exist.
-
   ## Examples
 
       iex> get_todo_by_id(123)
       {:ok, %Todo{}}
 
       iex> get_todo_by_id(456)
-      {:error, "Todo not found"}
+      {:not_found, "Todo not found"}
 
   """
   def get_todo_by_id(id) do
@@ -57,15 +55,13 @@ defmodule TodoApi.Todos do
   @doc """
   Gets a single todo based on priority number.
 
-  Raises `Ecto.NoResultsError` if the Todo does not exist.
-
   ## Examples
 
       iex> get_todo_by_priority(123)
       {:ok, %Todo{}}
 
       iex> get_todo_by_priority(456)
-      {:error, "Todo not found"}
+      {:not_found, "Todo not found"}
 
   """
   def get_todo_by_priority(priority) do
@@ -145,7 +141,8 @@ defmodule TodoApi.Todos do
   """
   def update_todo(%Todo{} = todo, attrs) do
     result =
-      with true <- Map.has_key?(attrs, :priority),
+      with {:ok, todo} <- get_todo_by_id(todo.id),
+           true <- Map.has_key?(attrs, :priority),
            true <- Map.get(attrs, :priority) != nil do
         # check if proposed priority value is within valid range
         proposed_priority_value = Map.get(attrs, :priority)
@@ -178,10 +175,10 @@ defmodule TodoApi.Todos do
 
   ## Examples
 
-      iex> update_todo_by_priority(todo, %{field: new_value})
+      iex> update_todo_by_priority(priority_number, %{field: new_value})
       {:ok, %Todo{}}
 
-      iex> update_todo_by_priority(todo, %{field: bad_value})
+      iex> update_todo_by_priority(priority_number, %{field: bad_value})
       {:error, "Cannot update the todo"}
 
   """
@@ -222,10 +219,10 @@ defmodule TodoApi.Todos do
 
   ## Examples
 
-      iex> delete_todo(todo)
+      iex> delete_todo(priority_number)
       {:ok, %Todo{}}
 
-      iex> delete_todo(todo)
+      iex> delete_todo(priority_number)
       {:error, "Cannot delete the todo"}
 
   """
