@@ -2,6 +2,12 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@import "./components/header.css";
+@import "./components/buttons.css";
+@import "./components/input_fields.css";
+@import "./components/todo.css";
+@import "./components/sections.css";
+
 /* This file is for your main application CSS */
 
 /* Alerts and form errors used by phx.new */
