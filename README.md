@@ -26,12 +26,23 @@ Here's my plan for the Todo API:
  - GET - /lists/:id/todos
  - GET POST PUT DELETE - /lists/:id/todos/:todo_id
 
+ For the Todo Client, I decided to 
+  - create the liveview app from scratch 
+  - use Tailwind CSS
+  - use phx.gen.auth for the user logins
+
 ## My Progress
 
 Here are the mix commands I used to create the projects:
 * Todo API:
     - mix phx.new todo_api --no-html --no-assets --no-live --no-dashboard
     - mix phx.gen.json Lists List lists user_id:integer list_name:string
+* Todo Client:
+    - mix phx.new todo_client
+
+I was able to finish the version 2 of the Todo API plus along with the tests on both the APIs and Controllers of Todos and Lists.
+
+For the Todo Client, I created it as a bare project and also added tailwind css.
 
 ## Getting Started <a name = "getting_started"></a>
 
