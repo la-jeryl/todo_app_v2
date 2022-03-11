@@ -21,7 +21,7 @@ defmodule TodoApi.TodosFixtures do
       |> Enum.into(%{
         description: "some description",
         is_done: true,
-        priority: 42
+        priority: 1
       })
 
     {:ok, todo} = TodoApi.Todos.create_todo(list, params)
