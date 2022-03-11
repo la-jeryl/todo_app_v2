@@ -40,6 +40,8 @@ config :tailwind,
     cd: Path.expand("../assets", __DIR__)
   ]
 
+config :tesla, adapter: Tesla.Adapter.Hackney
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.14.0",
