@@ -88,11 +88,9 @@ defmodule TodoApi.Lists do
 
   """
   def update_list(%List{} = list, attrs) do
-    with {:ok, _list} <- get_list_by_id(list.id),
-         {:ok, updated_list} <- list |> List.changeset(attrs) |> Repo.update() do
+    with {:ok, updated_list} <- list |> List.changeset(attrs) |> Repo.update() do
       {:ok, updated_list}
     else
-      {:not_found, reason} -> {:error, reason}
       {:error, _} -> {:error, "Cannot update the todo list"}
     end
   end
@@ -110,11 +108,9 @@ defmodule TodoApi.Lists do
 
   """
   def delete_list(%List{} = list) do
-    with {:ok, list} <- get_list_by_id(list.id),
-         {:ok, list} <- Repo.delete(list) do
+    with {:ok, list} <- Repo.delete(list) do
       {:ok, "'#{list.list_name}' todo list is deleted"}
     else
-      {:not_found, reason} -> {:error, reason}
       {:error, _reason} -> {:error, "Cannot delete the todo list"}
     end
   end

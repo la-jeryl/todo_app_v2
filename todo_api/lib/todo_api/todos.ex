@@ -141,8 +141,7 @@ defmodule TodoApi.Todos do
   """
   def update_todo(%Todo{} = todo, attrs) do
     result =
-      with {:ok, todo} <- get_todo_by_id(todo.id),
-           true <- Map.has_key?(attrs, :priority),
+      with true <- Map.has_key?(attrs, :priority),
            true <- Map.get(attrs, :priority) != nil do
         # check if proposed priority value is within valid range
         proposed_priority_value = Map.get(attrs, :priority)
@@ -165,7 +164,6 @@ defmodule TodoApi.Todos do
     case result do
       {:ok, result} -> {:ok, result}
       {:out_of_range, reason} -> {:error, reason}
-      {:not_found, reason} -> {:error, reason}
       {:error, _} -> {:error, "Cannot update the todo"}
     end
   end
@@ -205,11 +203,9 @@ defmodule TodoApi.Todos do
 
   """
   def delete_todo(%Todo{} = todo) do
-    with {:ok, todo} <- get_todo_by_id(todo.id),
-         {:ok, deleted_todo} <- Repo.delete(todo) do
+    with {:ok, deleted_todo} <- Repo.delete(todo) do
       {:ok, "'#{deleted_todo.description}' todo is deleted"}
     else
-      {:not_found, reason} -> {:error, reason}
       {:error, _reason} -> {:error, "Cannot delete the todo"}
     end
   end
