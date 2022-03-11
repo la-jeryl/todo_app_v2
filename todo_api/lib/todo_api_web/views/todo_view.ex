@@ -3,11 +3,11 @@ defmodule TodoApiWeb.TodoView do
   alias TodoApiWeb.TodoView
 
   def render("index.json", %{todos: todos}) do
-    %{status: "TODOS_FOUND", data: render_many(todos, TodoView, "todo.json")}
+    %{data: render_many(todos, TodoView, "todo.json")}
   end
 
   def render("show.json", %{todo: todo}) do
-    %{status: "TODO_FOUND", data: render_one(todo, TodoView, "todo.json")}
+    %{data: render_one(todo, TodoView, "todo.json")}
   end
 
   def render("todo.json", %{todo: todo}) do
