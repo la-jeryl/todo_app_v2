@@ -73,9 +73,27 @@ defmodule TodoApi.TodosTest do
       assert {:ok, todo} == Todos.get_todo_by_id(todo.id)
     end
 
+    test "update_todo_by_priority/2 with valid data updates the todo" do
+      todo = todo_fixture()
+      update_attrs = %{description: "some updated description", is_done: false}
+
+      assert {:ok, %Todo{} = todo} = Todos.update_todo_by_priority(todo.priority, update_attrs)
+      assert todo.description == "some updated description"
+      assert todo.is_done == false
+    end
+
     test "delete_todo/1 deletes the todo" do
       todo = todo_fixture()
       assert {:ok, "'some description' todo is deleted"} = Todos.delete_todo(todo)
+      assert {:not_found, "Todo not found"} == Todos.get_todo_by_id(todo.id)
+    end
+
+    test "delete_todo_by_priority/1 deletes the todo by priority" do
+      todo = todo_fixture()
+
+      assert {:ok, "'some description' todo is deleted"} =
+               Todos.delete_todo_by_priority(todo.priority)
+
       assert {:not_found, "Todo not found"} == Todos.get_todo_by_id(todo.id)
     end
 
