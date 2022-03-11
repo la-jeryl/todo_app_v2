@@ -6,8 +6,8 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :todo_client, TodoClient.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "jeryl",
+  password: "testing",
   hostname: "localhost",
   database: "todo_client_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
@@ -16,7 +16,7 @@ config :todo_client, TodoClient.Repo,
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :todo_client, TodoClientWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: 4002],
+  http: [ip: {127, 0, 0, 1}, port: 4042],
   secret_key_base: "grwZhej8y4p0nif8A4vdDzbMWxbLg+gk+K4upZHgSxX4WusUkoiiIP7M42vvJA2x",
   server: false
 
