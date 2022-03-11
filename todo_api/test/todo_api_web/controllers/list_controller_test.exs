@@ -64,7 +64,7 @@ defmodule TodoApiWeb.ListControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, list: list} do
       conn = put(conn, Routes.list_path(conn, :update, list), list: @invalid_attrs)
-      assert json_response(conn, 400) == %{"error" => "Cannot update the list"}
+      assert json_response(conn, 400) == %{"error" => "Cannot update the todo list"}
     end
   end
 

@@ -34,7 +34,6 @@ defmodule TodoApiWeb.TodoControllerTest do
       list = list_fixture()
       conn = post(conn, Routes.list_todo_path(conn, :create, list.id), todo: @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
-      _todo = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.list_todo_path(conn, :show, list.id, id))
 

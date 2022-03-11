@@ -11,7 +11,7 @@ defmodule TodoApiWeb.ListController do
     with {:ok, lists} <- Lists.list_lists() do
       render(conn, "index.json", lists: lists)
     else
-      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
+      {_, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 
@@ -22,35 +22,35 @@ defmodule TodoApiWeb.ListController do
       |> put_resp_header("location", Routes.list_path(conn, :show, list))
       |> render("show.json", list: list)
     else
-      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
+      {_, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 
   def show(conn, %{"id" => id}) do
-    with {:ok, list} <- Lists.get_list(id) do
+    with {:ok, list} <- Lists.get_list_by_id(id) do
       render(conn, "show.json", list: list)
     else
-      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
+      {_, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 
   def update(conn, %{"id" => id, "list" => list_params}) do
-    with {:ok, list} <- Lists.get_list(id),
+    with {:ok, list} <- Lists.get_list_by_id(id),
          {:ok, %List{} = list} <- Lists.update_list(list, list_params) do
       render(conn, "show.json", list: list)
     else
-      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
+      {_, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    with {:ok, list} <- Lists.get_list(id),
+    with {:ok, list} <- Lists.get_list_by_id(id),
          {:ok, _list} <- Lists.delete_list(list) do
       render(conn, "delete_list_with_todos.json",
         message: "'#{list.list_name}' todo list was deleted."
       )
     else
-      {:error, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
+      {_, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 end
