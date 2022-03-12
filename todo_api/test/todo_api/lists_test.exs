@@ -9,7 +9,7 @@ defmodule TodoApi.ListsTest do
     import TodoApi.ListsFixtures
 
     @invalid_attrs %{list_name: nil, user_id: nil}
-    @valid_attrs %{list_name: "some list_name", user_id: 42}
+    @valid_attrs %{list_name: "some list_name", user_id: 1}
 
     test "list_lists/0 returns all lists" do
       list = list_fixture()
@@ -29,7 +29,7 @@ defmodule TodoApi.ListsTest do
     test "create_list/1 with valid data creates a list" do
       assert {:ok, %List{} = list} = Lists.create_list(@valid_attrs)
       assert list.list_name == "some list_name"
-      assert list.user_id == 42
+      assert list.user_id == 1
     end
 
     test "create_list/1 with invalid data returns error message" do
