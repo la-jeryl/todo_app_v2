@@ -12,7 +12,7 @@ defmodule TodoApi.ListsFixtures do
       attrs
       |> Enum.into(%{
         list_name: "some list_name",
-        user_id: 42
+        user_id: 1
       })
       |> TodoApi.Lists.create_list()
 
