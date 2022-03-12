@@ -8,27 +8,25 @@ defmodule TodoApi.Todos do
 
   alias TodoApi.Todos.Todo
   alias TodoApi.Lists.List
+  alias TodoApi.Lists
 
   @doc """
-  Returns the list of todos.
+  Returns the list of todos inside a todo list.
 
   ## Examples
 
-      iex> list_todos()
+      iex> list_todos(list_id)
       {:ok, [%Todo{}, ...]}
 
       iex> list_todos()
       {:error, "Cannot get the list of todos"}
 
   """
-  def list_todos do
-    try do
-      todos =
-        from(item in Todo, order_by: [asc: :priority])
-        |> Repo.all()
-
-      {:ok, todos}
-    catch
+  def list_todos(%List{} = list) do
+    with {:ok, todo_list} <- Lists.get_list_by_id(list.id),
+         sorted_list <- Enum.sort_by(todo_list.todos, & &1.priority, :asc) do
+      {:ok, sorted_list}
+    else
       _ -> {:error, "Cannot get the list of todos"}
     end
   end
@@ -38,36 +36,19 @@ defmodule TodoApi.Todos do
 
   ## Examples
 
-      iex> get_todo_by_id(123)
+      iex> get_todo_by_id(%List{}, 123)
       {:ok, %Todo{}}
 
-      iex> get_todo_by_id(456)
+      iex> get_todo_by_id(%List{}, 456)
       {:not_found, "Todo not found"}
 
   """
-  def get_todo_by_id(id) do
-    case Repo.get(Todo, id) do
-      nil -> {:not_found, "Todo not found"}
-      todo -> {:ok, todo}
-    end
-  end
-
-  @doc """
-  Gets a single todo based on priority number.
-
-  ## Examples
-
-      iex> get_todo_by_priority(123)
-      {:ok, %Todo{}}
-
-      iex> get_todo_by_priority(456)
-      {:not_found, "Todo not found"}
-
-  """
-  def get_todo_by_priority(priority) do
-    case Repo.get_by(Todo, priority: priority) do
-      nil -> {:not_found, "Todo not found"}
-      todo -> {:ok, todo}
+  def get_todo_by_id(%List{} = list, todo_id) do
+    with todo <- Enum.find(list.todos, &(&1.id |> to_string() == todo_id)),
+         true <- todo != nil do
+      {:ok, todo}
+    else
+      _ -> {:not_found, "Todo not found"}
     end
   end
 
@@ -85,14 +66,13 @@ defmodule TodoApi.Todos do
   """
   def create_todo(%List{} = list, attrs \\ %{}) do
     result =
-      with true <- Map.has_key?(attrs, :priority),
-           true <- Map.get(attrs, :priority) != nil do
+      with true <- Map.has_key?(attrs, "priority"),
+           proposed_priority_value <- Map.get(attrs, "priority"),
+           true <- proposed_priority_value != nil do
         # check if proposed priority value is within valid range
-        proposed_priority_value = Map.get(attrs, :priority)
-        latest_todos_count = latest_todos_count()
+        latest_todos_count = Enum.count(list.todos) + 1
 
         if proposed_priority_value in 1..latest_todos_count do
-          # Could return {:ok, struct} or {:error, changeset}
           inserted_todo =
             list
             |> Ecto.build_assoc(:todos)
@@ -101,8 +81,9 @@ defmodule TodoApi.Todos do
 
           {:ok, todo_details} = inserted_todo
 
-          # move_todo does resetting of todo priorities
-          move_todo(todo_details, proposed_priority_value)
+          if proposed_priority_value < latest_todos_count do
+            arrange_todos(list, todo_details, proposed_priority_value, "create")
+          end
 
           inserted_todo
         else
@@ -111,7 +92,8 @@ defmodule TodoApi.Todos do
       else
         _ ->
           # update the todo priority based on the latest count
-          updated_todo_map = Map.put(attrs, :priority, latest_todos_count()) |> key_to_atom()
+          updated_todo_map =
+            Map.put(attrs, :priority, Enum.count(list.todos) + 1) |> key_to_atom()
 
           list
           |> Ecto.build_assoc(:todos)
@@ -121,9 +103,14 @@ defmodule TodoApi.Todos do
 
     # Could return {:ok, struct} or {:error, changeset}
     case result do
-      {:ok, result} -> {:ok, result}
-      {:out_of_range, reason} -> {:error, reason}
-      {:error, _} -> {:error, "Cannot create the todo"}
+      {:ok, result} ->
+        {:ok, result}
+
+      {:out_of_range, reason} ->
+        {:error, reason}
+
+      {:error, _} ->
+        {:error, "Cannot create the todo"}
     end
   end
 
@@ -132,26 +119,22 @@ defmodule TodoApi.Todos do
 
   ## Examples
 
-      iex> update_todo(todo, %{field: new_value})
+      iex> update_todo(%List{}, todo, %{field: new_value})
       {:ok, %Todo{}}
 
-      iex> update_todo(todo, %{field: bad_value})
+      iex> update_todo(%List{}, todo, %{field: bad_value})
       {:error, "Cannot update the todo"}
 
   """
-  def update_todo(%Todo{} = todo, attrs) do
+  def update_todo(%List{} = list, %Todo{} = todo, attrs) do
     result =
-      with true <- Map.has_key?(attrs, :priority),
-           true <- Map.get(attrs, :priority) != nil do
+      with true <- Map.has_key?(attrs, "priority"),
+           proposed_priority_value <- Map.get(attrs, "priority"),
+           true <- proposed_priority_value != nil do
         # check if proposed priority value is within valid range
-        proposed_priority_value = Map.get(attrs, :priority)
-        current_record_count = current_todos_count()
+        if proposed_priority_value in 1..Enum.count(list.todos) do
+          arrange_todos(list, todo, proposed_priority_value, "update")
 
-        if proposed_priority_value in 1..current_record_count do
-          # move_todo does resetting of todo priorities
-          move_todo(todo, proposed_priority_value)
-
-          # Could return {:ok, struct} or {:error, changeset}
           todo |> Todo.changeset(attrs) |> Repo.update()
         else
           {:out_of_range, "Assigned 'priority' is out of valid range"}
@@ -160,32 +143,9 @@ defmodule TodoApi.Todos do
         _ -> todo |> Todo.changeset(attrs) |> Repo.update()
       end
 
-    # Could return {:ok, struct} or {:error, changeset}
     case result do
       {:ok, result} -> {:ok, result}
       {:out_of_range, reason} -> {:error, reason}
-      {:error, _} -> {:error, "Cannot update the todo"}
-    end
-  end
-
-  @doc """
-  Updates a todo based on priority number.
-
-  ## Examples
-
-      iex> update_todo_by_priority(priority_number, %{field: new_value})
-      {:ok, %Todo{}}
-
-      iex> update_todo_by_priority(priority_number, %{field: bad_value})
-      {:error, "Cannot update the todo"}
-
-  """
-  def update_todo_by_priority(priority_number, attrs) do
-    with {:ok, todo} <- get_todo_by_priority(priority_number),
-         {:ok, updated_todo} <- update_todo(todo, attrs) do
-      {:ok, updated_todo}
-    else
-      {:not_found, reason} -> {:error, reason}
       {:error, _} -> {:error, "Cannot update the todo"}
     end
   end
@@ -195,39 +155,18 @@ defmodule TodoApi.Todos do
 
   ## Examples
 
-      iex> delete_todo(todo)
+      iex> delete_todo(%List{}, todo)
       {:ok, %Todo{}}
 
-      iex> delete_todo(todo)
+      iex> delete_todo(%List{}, todo)
       {:error, "Cannot delete the todo"}
 
   """
-  def delete_todo(%Todo{} = todo) do
+  def delete_todo(%List{} = list, %Todo{} = todo) do
     with {:ok, deleted_todo} <- Repo.delete(todo) do
+      arrange_todos(list, todo, nil, "delete")
       {:ok, "'#{deleted_todo.description}' todo is deleted"}
     else
-      {:error, _reason} -> {:error, "Cannot delete the todo"}
-    end
-  end
-
-  @doc """
-  Deletes a todo based on priority number.
-
-  ## Examples
-
-      iex> delete_todo(priority_number)
-      {:ok, %Todo{}}
-
-      iex> delete_todo(priority_number)
-      {:error, "Cannot delete the todo"}
-
-  """
-  def delete_todo_by_priority(priority_number) do
-    with {:ok, todo} <- get_todo_by_priority(priority_number),
-         {:ok, deleted_todo} <- Repo.delete(todo) do
-      {:ok, "'#{deleted_todo.description}' todo is deleted"}
-    else
-      {:not_found, reason} -> {:error, reason}
       {:error, _reason} -> {:error, "Cannot delete the todo"}
     end
   end
@@ -257,32 +196,44 @@ defmodule TodoApi.Todos do
     end)
   end
 
-  defp reset_todos_priorities(todo_list) do
+  defp arrange_todos(%List{} = todo_list, %Todo{} = todo, proposed_priority_value, action_type) do
+    case action_type do
+      "create" ->
+        todo_list.todos
+        |> Enum.sort_by(& &1.priority, :asc)
+        |> custom_sort(proposed_priority_value)
+
+      "update" ->
+        Enum.filter(todo_list.todos, &(&1.id != todo.id))
+        |> Enum.sort_by(& &1.priority, :asc)
+        |> custom_sort(proposed_priority_value)
+
+      "delete" ->
+        Enum.filter(todo_list.todos, &(&1.id != todo.id))
+        |> Enum.sort_by(& &1.priority, :asc)
+        |> reset_todo_priorities()
+    end
+  end
+
+  defp custom_sort(sorted_todo_list, proposed_priority_value) do
+    # split the todo_list based on the item to be replaced
+    first_half = Enum.split(sorted_todo_list, proposed_priority_value - 1) |> elem(0)
+    second_half = Enum.split(sorted_todo_list, proposed_priority_value - 1) |> elem(1)
+
+    # update the priorities on the second half starting on index 1
+    reset_todo_priorities(first_half)
+
+    # update the priorities on the second half starting on the proposed_priority_value + 1
+    reset_todo_priorities(second_half, proposed_priority_value + 1)
+  end
+
+  defp reset_todo_priorities(todo_list, custom_index \\ 1) do
     todo_list
-    |> Enum.with_index(1)
+    |> Enum.with_index(custom_index)
     |> Enum.map(fn {item, index} ->
       item
       |> Todo.changeset(%{priority: index})
       |> Repo.update()
     end)
-  end
-
-  defp move_todo(%Todo{} = todo, proposed_priority_value) do
-    {:ok, todo_list} = list_todos()
-
-    current_todo_index = todo_list |> Enum.find_index(&(&1.id == todo.id))
-
-    updated_todo_list = todo_list |> Enum.slide(current_todo_index, proposed_priority_value - 1)
-
-    reset_todos_priorities(updated_todo_list)
-  end
-
-  defp latest_todos_count do
-    current_todos_count() + 1
-  end
-
-  defp current_todos_count do
-    from(item in Todo, select: count())
-    |> Repo.one()
   end
 end
