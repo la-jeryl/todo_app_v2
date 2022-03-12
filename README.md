@@ -30,6 +30,7 @@ Here's my plan for the Todo API:
   - create the liveview app from scratch 
   - use Tailwind CSS
   - use phx.gen.auth for the user logins
+  - use tesla as the http toolkit
 
 ## My Progress
 
@@ -42,7 +43,7 @@ Here are the mix commands I used to create the projects:
 
 I was able to finish the version 2 of the Todo API plus along with the tests on both the APIs and Controllers of Todos and Lists.
 
-For the Todo Client, I created it as a bare project and also added tailwind css.
+For the Todo Client, I created it as a bare project and also added tailwind css. I also used tesla and phx.gen.auth.
 
 ## Getting Started <a name = "getting_started"></a>
 
