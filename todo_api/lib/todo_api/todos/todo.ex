@@ -5,6 +5,7 @@ defmodule TodoApi.Todos.Todo do
   alias TodoApi.Lists.List
 
   schema "todos" do
+    field :title, :string
     field :description, :string
     field :is_done, :boolean, default: false
     field :priority, :integer
@@ -16,8 +17,8 @@ defmodule TodoApi.Todos.Todo do
   @doc false
   def changeset(todo, attrs) do
     todo
-    |> cast(attrs, [:priority, :description, :is_done])
-    |> validate_required([:priority, :description, :is_done])
+    |> cast(attrs, [:priority, :title, :description, :is_done])
+    |> validate_required([:priority, :title, :is_done])
     |> assoc_constraint(:list)
   end
 end
