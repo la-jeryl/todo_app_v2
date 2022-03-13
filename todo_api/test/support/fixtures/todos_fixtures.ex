@@ -9,7 +9,7 @@ defmodule TodoApi.TodosFixtures do
   """
   def todo_fixture(list) do
     params = %{
-      description: "some description",
+      title: "some title",
       is_done: true,
       priority: 1
     }

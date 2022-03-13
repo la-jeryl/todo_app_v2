@@ -165,7 +165,7 @@ defmodule TodoApi.Todos do
   def delete_todo(%List{} = list, %Todo{} = todo) do
     with {:ok, deleted_todo} <- Repo.delete(todo) do
       arrange_todos(list, todo, nil, "delete")
-      {:ok, "'#{deleted_todo.description}' todo is deleted"}
+      {:ok, "'#{deleted_todo.title}' todo is deleted"}
     else
       {:error, _reason} -> {:error, "Cannot delete the todo"}
     end

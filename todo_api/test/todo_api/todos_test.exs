@@ -10,10 +10,10 @@ defmodule TodoApi.TodosTest do
     import TodoApi.TodosFixtures
     import TodoApi.ListsFixtures
 
-    @invalid_attrs %{"description" => nil, "is_done" => nil, "priority" => nil}
-    @valid_attrs %{"description" => "some description", "is_done" => true, "priority" => 1}
+    @invalid_attrs %{"title" => nil, "is_done" => nil, "priority" => nil}
+    @valid_attrs %{"title" => "some title", "is_done" => true, "priority" => 1}
     @out_of_range_attrs %{
-      "description" => "some description",
+      "title" => "some title",
       "is_done" => true,
       "priority" => 100
     }
@@ -34,7 +34,7 @@ defmodule TodoApi.TodosTest do
     test "create_todo/1 with valid data creates a todo" do
       list = list_fixture()
       assert {:ok, %Todo{} = todo} = Todos.create_todo(list, @valid_attrs)
-      assert todo.description == "some description"
+      assert todo.title == "some title"
       assert todo.is_done == true
       assert todo.priority == 1
     end
@@ -79,7 +79,7 @@ defmodule TodoApi.TodosTest do
       list = list_fixture()
       todo = todo_fixture(list)
 
-      assert {:ok, "'some description' todo is deleted"} = Todos.delete_todo(list, todo)
+      assert {:ok, "'some title' todo is deleted"} = Todos.delete_todo(list, todo)
       assert {:not_found, "Todo not found"} == Todos.get_todo_by_id(list, todo.id)
     end
 

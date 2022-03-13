@@ -14,6 +14,7 @@ defmodule TodoApiWeb.TodoView do
     %{
       id: todo.id,
       priority: todo.priority,
+      title: todo.title,
       description: todo.description,
       is_done: todo.is_done
     }

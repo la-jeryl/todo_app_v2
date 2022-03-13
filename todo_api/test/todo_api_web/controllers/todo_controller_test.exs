@@ -8,12 +8,12 @@ defmodule TodoApiWeb.TodoControllerTest do
   alias TodoApi.Todos.Todo
 
   @create_attrs %{
-    "description" => "some description",
+    "title" => "some title",
     "is_done" => true,
     "priority" => 1
   }
   @update_attrs %{
-    "description" => "some updated description",
+    "title" => "some title",
     "is_done" => false,
     "priority" => 1
   }
@@ -40,7 +40,7 @@ defmodule TodoApiWeb.TodoControllerTest do
 
       assert %{
                "id" => ^id,
-               "description" => "some description",
+               "title" => "some title",
                "is_done" => true,
                "priority" => 1
              } = json_response(conn, 200)["data"]
@@ -75,7 +75,8 @@ defmodule TodoApiWeb.TodoControllerTest do
 
       assert %{
                "id" => _id,
-               "description" => "some updated description",
+               "title" => "some title",
+               "description" => nil,
                "is_done" => false,
                "priority" => 1
              } = json_response(conn, 200)["data"]
@@ -99,7 +100,7 @@ defmodule TodoApiWeb.TodoControllerTest do
       list = list_fixture()
       todo = todo_fixture(list)
       conn = delete(conn, Routes.list_todo_path(conn, :delete, list.id, todo.id))
-      assert json_response(conn, 200) == %{"message" => "'some description' todo was deleted."}
+      assert json_response(conn, 200) == %{"message" => "'some title' todo was deleted."}
 
       get_conn = get(conn, Routes.list_todo_path(conn, :show, list.id, todo.id))
       assert json_response(get_conn, 400) == %{"error" => "Todo not found"}

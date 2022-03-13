@@ -53,7 +53,7 @@ defmodule TodoApiWeb.TodoController do
     with {:ok, list} = Lists.get_list_by_id(list_id),
          {:ok, todo} <- Todos.get_todo_by_id(list, id),
          {:ok, _todo} <- Todos.delete_todo(list, todo) do
-      render(conn, "delete_todo.json", message: "'#{todo.description}' todo was deleted.")
+      render(conn, "delete_todo.json", message: "'#{todo.title}' todo was deleted.")
     else
       {_, reason} ->
         conn |> put_status(:bad_request) |> render("error.json", error: reason)
