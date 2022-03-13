@@ -9,7 +9,7 @@ defmodule TodoClientWeb.TodoListLive.Input do
     ~H"""
     <div id="live-todo-input">
       <form action="#" phx-submit="create-todo" class="flex mt-4 mb-4">
-        <%= text_input :todo, "description", placeholder: "Add todo",  class: "input-todo" %>
+        <%= text_input :todo, "title", placeholder: "Add todo",  class: "input-todo" %>
         <%= submit "Add", class: "btn-add" %>
       </form>
     </div>
