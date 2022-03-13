@@ -1,8 +1,11 @@
-defmodule TodoClientWeb.TodoListLive do
+defmodule TodoClientWeb.TodosLive do
   use TodoClientWeb, :live_view
   alias TodoClient.TodoList
+  alias TodoClient.Accounts
+  alias TodoClientWeb.TodosLive.Components
 
-  def(mount(_params, _session, socket)) do
+  def(mount(_params, %{"user_token" => user_token} = _session, socket)) do
+    socket = socket |> assign(:current_user, Accounts.get_user_by_session_token(user_token))
     {:ok, fetch(socket)}
   end
 
@@ -26,19 +29,16 @@ defmodule TodoClientWeb.TodoListLive do
     {:noreply, fetch(socket)}
   end
 
-  def render(assigns) do
-    ~H"""
-    <div class="self-center h-100 w-full flex items-center justify-center font-sans">
-      <div class="section-main">
-        <.live_component module={__MODULE__.Input} id="todo-input" />
-        <%= if @todos do %>
-          <.live_component module={__MODULE__.List} id="todo-list" todos={@todos}/>
-        <% else%>
-          <h3>Make your first todo.</h3>
-        <% end %>
-      </div>
-    </div>
-    """
+  def handle_event(
+        "dropped",
+        %{"currentPriority" => current_priority, "proposedPriority" => proposed_priority},
+        socket
+      ) do
+    TodoList.edit_todo_by_priority(1, String.to_integer(current_priority), %{
+      todo: %{priority: proposed_priority}
+    })
+
+    {:noreply, fetch(socket)}
   end
 
   def fetch(socket) do

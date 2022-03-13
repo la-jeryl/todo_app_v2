@@ -1,0 +1,10 @@
+<div class="self-center h-100 w-full flex items-center justify-center font-sans">
+    <div class="section-main">
+        <Components.input id="todo-input" />
+        <%= if @todos do %>
+        <Components.list id="todo-list" todos={@todos} />
+        <% else%>
+        <h3>Make your first todo.</h3>
+        <% end %>
+    </div>
+</div>

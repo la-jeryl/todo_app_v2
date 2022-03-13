@@ -18,10 +18,10 @@ defmodule TodoClientWeb.Router do
   end
 
   scope "/", TodoClientWeb do
-    pipe_through :browser
+    pipe_through [:browser]
 
-    # get "/", PageController, :index
-    live "/", TodoListLive
+    get "/", PageController, :index
+    live "/todolist", TodosLive
   end
 
   # Other scopes may use custom stacks.
