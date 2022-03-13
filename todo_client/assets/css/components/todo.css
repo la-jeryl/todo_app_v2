@@ -1,11 +1,16 @@
-.todo-description-priority {
+.todo-title-priority {
     @apply w-12 text-gray-500
 }
 
-.todo-description-default {
+.todo-title-default {
     @apply w-full text-gray-500
 }
 
-.todo-description-done {
+.todo-title-done {
     @apply w-full line-through text-green-500
 }
+
+.draggable {
+    @apply rounded-lg p-2 border-teal-300 border-0 bg-purple-100
+}
+
