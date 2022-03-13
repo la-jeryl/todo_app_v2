@@ -2,7 +2,6 @@ defmodule TodoClientWeb.TodosLive do
   use TodoClientWeb, :live_view
   alias TodoClient.TodoList
   alias TodoClient.Accounts
-  alias TodoClientWeb.TodosLive.Components
 
   def(mount(_params, %{"user_token" => user_token} = _session, socket)) do
     socket = socket |> assign(:current_user, Accounts.get_user_by_session_token(user_token))
@@ -42,7 +41,8 @@ defmodule TodoClientWeb.TodosLive do
   end
 
   def fetch(socket) do
-    todo_list = TodoList.get_all_todos(1)["data"]
-    assign(socket, todos: todo_list)
+    list = TodoList.get_list(1)["data"]
+    todo_list = TodoList.get_all_todos(list["id"])["data"]
+    assign(socket, todos: todo_list, list_name: list["list_name"])
   end
 end

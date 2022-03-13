@@ -16,7 +16,7 @@ defmodule TodoClientWeb.TodosLive.Components do
 
   def input(assigns) do
     ~H"""
-    <div id="live-todo-input">
+    <div id="live-todo-input" class="mb-8">
       <form action="#" phx-submit="create-todo" class="flex mt-4 mb-4">
         <%= text_input :todo, "title", placeholder: "Add todo",  class: "input-todo" %>
         <%= submit "Add", class: "btn-add" %>
