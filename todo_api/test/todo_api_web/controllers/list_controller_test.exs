@@ -21,10 +21,8 @@ defmodule TodoApiWeb.ListControllerTest do
 
   describe "index" do
     test "lists all lists", %{conn: conn} do
-      conn = post(conn, Routes.list_path(conn, :create), list: @create_attrs)
-      conn = get(conn, Routes.list_path(conn, :index), user_id: 42)
-      IO.inspect(conn)
-      # assert json_response(conn, 200)["data"] == []
+      conn = get(conn, Routes.list_path(conn, :index))
+      assert json_response(conn, 200)["data"] == []
     end
   end
 
