@@ -25,8 +25,11 @@ defmodule TodoApiWeb.TodoControllerTest do
 
   describe "index" do
     test "lists all todos from a list", %{conn: conn} do
-      conn = get(conn, Routes.list_path(conn, :index))
-      assert json_response(conn, 200)["data"] == []
+      list = list_fixture()
+      conn = post(conn, Routes.list_todo_path(conn, :create, list.id), todo: @create_attrs)
+      conn = get(conn, Routes.list_todo_path(conn, :index, list.id))
+
+      assert json_response(conn, 200)["data"] != []
     end
   end
 

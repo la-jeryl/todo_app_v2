@@ -6,12 +6,19 @@ defmodule TodoApiWeb.ListController do
 
   action_fallback TodoApiWeb.FallbackController
 
-  @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
-  def index(conn, _params) do
-    with {:ok, lists} <- Lists.list_lists() do
-      render(conn, "index.json", lists: lists)
+  def index(conn, %{"user_id" => user_id}) do
+    with {:ok, lists} <- Lists.list_lists(),
+         true <- lists != [],
+         filtered_list <- Enum.filter(lists, &(&1.user_id == user_id)) do
+      render(conn, "index.json", lists: filtered_list)
     else
-      {_, reason} -> conn |> put_status(:bad_request) |> render("error.json", error: reason)
+      false ->
+        conn
+        |> put_status(:bad_request)
+        |> render("error.json", error: "Cannot get the list of todo lists")
+
+      {:error, reason} ->
+        conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
   end
 
