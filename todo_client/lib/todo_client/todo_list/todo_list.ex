@@ -141,7 +141,7 @@ defmodule TodoClient.TodoList do
   def get_all_todos(list_id) do
     with {_, response} <-
            get(
-             "/lists/#{list_id |> Integer.to_string()}" <>
+             "/lists/#{list_id}" <>
                "/todos/"
            ) do
       response.body

@@ -1,6 +1,8 @@
 defmodule TodoClientWeb.TodosLive.Components do
   use Phoenix.Component
   use Phoenix.HTML
+  alias TodoClientWeb.TodosLive
+  alias Phoenix.LiveView.JS
 
   def list(assigns) do
     ~H"""
@@ -44,7 +46,31 @@ defmodule TodoClientWeb.TodosLive.Components do
         </p>
         <button id={"mark-as-not-done-#{priority}"} class="btn-done" phx-click="not-done-todo" phx-value-priority={priority}>Done</button>
         <% end %>
+      <button phx-click={JS.show(to: "#modal", transition: "fade-in") } class="btn-edit">Edit</button>
       <button class="btn-remove" phx-click="delete-todo" phx-value-priority={priority}>Remove</button>
+    </div>
+    """
+  end
+
+  def hide_modal(js \\ %JS{}) do
+    js
+    |> JS.hide(transition: "fade-out", to: "#modal")
+    |> JS.hide(transition: "fade-out-scale", to: "#modal-content")
+  end
+
+  def modal(assigns) do
+    ~H"""
+    <div id="modal" class="phx-modal" phx-remove={hide_modal()}>
+      <div
+        id="modal-content"
+        class="phx-modal-content"
+        phx-click-away={hide_modal()}
+        phx-window-keydown={hide_modal()}
+        phx-key="escape"
+      >
+        <button class="phx-modal-close" phx-click={hide_modal()}>✖</button>
+        <p>testing</p>
+      </div>
     </div>
     """
   end

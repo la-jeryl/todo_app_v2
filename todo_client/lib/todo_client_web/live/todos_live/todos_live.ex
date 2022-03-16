@@ -9,22 +9,22 @@ defmodule TodoClientWeb.TodosLive do
   end
 
   def handle_event("create-todo", %{"todo" => todo}, socket) do
-    TodoList.new_todo(1, %{todo: todo})
+    TodoList.new_todo(21, %{todo: todo})
     {:noreply, fetch(socket)}
   end
 
   def handle_event("delete-todo", %{"priority" => priority}, socket) do
-    TodoList.delete_todo_by_priority(1, String.to_integer(priority))
+    TodoList.delete_todo_by_priority(21, String.to_integer(priority))
     {:noreply, fetch(socket)}
   end
 
   def handle_event("done-todo", %{"priority" => priority}, socket) do
-    TodoList.edit_todo_by_priority(1, String.to_integer(priority), %{todo: %{is_done: false}})
+    TodoList.edit_todo_by_priority(21, String.to_integer(priority), %{todo: %{is_done: false}})
     {:noreply, fetch(socket)}
   end
 
   def handle_event("not-done-todo", %{"priority" => priority}, socket) do
-    TodoList.edit_todo_by_priority(1, String.to_integer(priority), %{todo: %{is_done: true}})
+    TodoList.edit_todo_by_priority(21, String.to_integer(priority), %{todo: %{is_done: true}})
     {:noreply, fetch(socket)}
   end
 
@@ -33,7 +33,7 @@ defmodule TodoClientWeb.TodosLive do
         %{"currentPriority" => current_priority, "proposedPriority" => proposed_priority},
         socket
       ) do
-    TodoList.edit_todo_by_priority(1, String.to_integer(current_priority), %{
+    TodoList.edit_todo_by_priority(21, String.to_integer(current_priority), %{
       todo: %{priority: proposed_priority}
     })
 
@@ -41,7 +41,7 @@ defmodule TodoClientWeb.TodosLive do
   end
 
   def fetch(socket) do
-    list = TodoList.get_list(1)["data"]
+    list = TodoList.get_list(21)["data"]
     todo_list = TodoList.get_all_todos(list["id"])["data"]
     assign(socket, todos: todo_list, list_name: list["list_name"])
   end

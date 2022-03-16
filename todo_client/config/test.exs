@@ -12,14 +12,14 @@ config :todo_client, TodoClient.Repo,
   username: "jeryl",
   password: "testing",
   hostname: "localhost",
-  database: "todo_client_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "todo_client_test#{System.get_env("MIX_TEST_PARTITION")}2",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :todo_client, TodoClientWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: 4042],
+  http: [ip: {127, 0, 0, 1}, port: 4082],
   secret_key_base: "grwZhej8y4p0nif8A4vdDzbMWxbLg+gk+K4upZHgSxX4WusUkoiiIP7M42vvJA2x",
   server: false
 
