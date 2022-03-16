@@ -1,39 +1,39 @@
 .btn-add {
-    @apply w-50 p-2 border-2 rounded text-teal-500 border-teal-400
+    @apply w-48 p-2 border-2 rounded text-teal-500 border-teal-400
 }
 
 .btn-add:hover {
-    @apply w-50 text-white bg-teal-400
+    @apply w-48 text-white bg-teal-400
 }
 
 .btn-done {
-    @apply w-50 p-2 ml-4 mr-2 border-2 rounded text-green-500 border-green-400 bg-white
+    @apply w-48 p-2 ml-4 mr-2 border-2 rounded text-green-500 border-green-400 bg-white
 }
 
 .btn-done:hover {
-    @apply w-50 text-white bg-green-400
+    @apply w-48 text-white bg-green-400
 }
 
 .btn-not-done {
-    @apply w-50 p-2 ml-4 mr-2 border-2 rounded text-yellow-500 border-yellow-400 bg-white
+    @apply w-48 p-2 ml-4 mr-2 border-2 rounded text-yellow-500 border-yellow-400 bg-white
 }
 
 .btn-not-done:hover {
-    @apply w-50 text-white bg-yellow-400
+    @apply w-48 text-white bg-yellow-400
 }
 
 .btn-remove {
-    @apply w-50 p-2 ml-2 border-2 rounded text-red-500 border-red-400 bg-white
+    @apply w-48 p-2 ml-2 border-2 rounded text-red-500 border-red-400 bg-white
 }
 
 .btn-remove:hover {
-    @apply w-50 text-white bg-red-500 
+    @apply w-48 text-white bg-red-400 
 }
 
 .btn-edit {
-    @apply w-50 p-2 ml-2 border-2 rounded text-orange-500 border-orange-400 bg-white
+    @apply w-48 p-2 ml-2 border-2 rounded text-orange-500 border-orange-400 bg-white
 }
 
 .btn-edit:hover {
-    @apply w-50 text-white bg-orange-500 
+    @apply w-48 text-white bg-orange-400 
 }
