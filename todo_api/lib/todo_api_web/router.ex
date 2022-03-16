@@ -1,24 +1,25 @@
 defmodule TodoApiWeb.Router do
   use TodoApiWeb, :router
-  use Pow.Phoenix.Router
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug TodoApiWeb.APIAuthPlug, otp_app: :todo_api
   end
 
-  pipeline :protected do
-    plug Pow.Plug.RequireAuthenticated,
-      error_handler: Pow.Phoenix.PlugErrorHandler
-  end
-
-  scope "/api" do
-    pipe_through :api
-
-    pow_routes()
+  pipeline :api_protected do
+    plug Pow.Plug.RequireAuthenticated, error_handler: TodoApiWeb.APIAuthErrorHandler
   end
 
   scope "/api", TodoApiWeb do
-    pipe_through [:api, :protected]
+    pipe_through :api
+
+    resources "/registration", RegistrationController, singleton: true, only: [:create]
+    resources "/session", SessionController, singleton: true, only: [:create, :delete]
+    post "/session/renew", SessionController, :renew
+  end
+
+  scope "/api", TodoApiWeb do
+    pipe_through [:api, :api_protected]
 
     resources "/lists", ListController, except: [:new, :edit] do
       resources "/todos", TodoController, except: [:new, :edit]
