@@ -17,20 +17,14 @@ defmodule TodoApiWeb.ListController do
   end
 
   def create(conn, %{"list" => list_params}) do
-    with true <- list_params["user_id"] == conn.assigns.current_user.id,
-         {:ok, %List{} = list} <- Lists.create_list(list_params) do
+    updated_params = Map.put(list_params, "user_id", conn.assigns.current_user.id)
+
+    with {:ok, %List{} = list} <- Lists.create_list(updated_params) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.list_path(conn, :show, list))
       |> render("show.json", list: list)
     else
-      false ->
-        conn
-        |> put_status(:bad_request)
-        |> render("error.json",
-          error: "Logged in user is not allowed to create a todo list for a different user"
-        )
-
       {_, reason} ->
         conn |> put_status(:bad_request) |> render("error.json", error: reason)
     end
@@ -54,9 +48,11 @@ defmodule TodoApiWeb.ListController do
   end
 
   def update(conn, %{"id" => id, "list" => list_params}) do
-    with true <- list_params["user_id"] == conn.assigns.current_user.id,
-         {:ok, list} <- Lists.get_list_by_id(id),
-         {:ok, %List{} = list} <- Lists.update_list(list, list_params) do
+    updated_params = Map.put(list_params, "user_id", conn.assigns.current_user.id)
+
+    with {:ok, list} <- Lists.get_list_by_id(id),
+         true <- list.user_id == conn.assigns.current_user.id,
+         {:ok, %List{} = list} <- Lists.update_list(list, updated_params) do
       render(conn, "show.json", list: list)
     else
       false ->

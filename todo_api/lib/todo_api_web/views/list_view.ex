@@ -20,7 +20,7 @@ defmodule TodoApiWeb.ListView do
   end
 
   def render("delete_list_with_todos.json", %{message: message}) do
-    %{message: message}
+    %{data: %{message: message}}
   end
 
   def render("error.json", %{error: error}) do
