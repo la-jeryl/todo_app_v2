@@ -1,4 +1,4 @@
-defmodule Client.Session do
+defmodule Client.Sessions do
   use Tesla
 
   plug Tesla.Middleware.BaseUrl, "http://localhost:4000/api"

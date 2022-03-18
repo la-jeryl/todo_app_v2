@@ -1,4 +1,4 @@
-defmodule Client.Registration do
+defmodule Client.Registrations do
   use Tesla
 
   plug Tesla.Middleware.BaseUrl, "http://localhost:4000/api"
