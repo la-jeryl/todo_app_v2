@@ -66,8 +66,6 @@ defmodule TodoApi.Lists do
 
   """
   def create_list(attrs \\ %{}) do
-    IO.inspect(attrs)
-
     %List{}
     |> List.changeset(attrs)
     |> Repo.insert()
