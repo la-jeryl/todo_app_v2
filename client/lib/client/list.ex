@@ -23,7 +23,7 @@ defmodule Client.List do
   def get_list(token, list_id) do
     with response <- get_all_lists(token) do
       case is_map(response) do
-        true -> %{error: response}
+        true -> response
         false -> Enum.find(response, &(&1["id"] == list_id))
       end
     else
