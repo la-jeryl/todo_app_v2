@@ -21,10 +21,10 @@ defmodule TodoApiWeb.TodoView do
   end
 
   def render("delete_todo.json", %{message: message}) do
-    %{message: message}
+    %{data: %{message: message}}
   end
 
   def render("error.json", %{error: error}) do
-    %{error: error}
+    %{error: %{error: error}}
   end
 end

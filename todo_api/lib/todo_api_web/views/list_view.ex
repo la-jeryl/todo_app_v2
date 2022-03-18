@@ -24,6 +24,6 @@ defmodule TodoApiWeb.ListView do
   end
 
   def render("error.json", %{error: error}) do
-    %{error: error}
+    %{error: %{error: error}}
   end
 end
