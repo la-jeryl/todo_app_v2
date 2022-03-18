@@ -16,7 +16,7 @@ defmodule Client.List do
           response.body["error"]
       end
     else
-      {:error, reason} -> %{error: reason}
+      {:error, reason} -> %{"error" => reason}
     end
   end
 
@@ -27,7 +27,7 @@ defmodule Client.List do
         false -> Enum.find(response, &(&1["id"] == list_id))
       end
     else
-      {:error, reason} -> %{error: reason}
+      {:error, reason} -> %{"error" => reason}
     end
   end
 
@@ -43,7 +43,7 @@ defmodule Client.List do
           response.body["error"]
       end
     else
-      {:error, reason} -> %{error: reason}
+      {:error, reason} -> %{"error" => reason}
     end
   end
 
@@ -59,7 +59,7 @@ defmodule Client.List do
           response.body["error"]
       end
     else
-      {:error, reason} -> %{error: reason}
+      {:error, reason} -> %{"error" => reason}
     end
   end
 
@@ -75,7 +75,7 @@ defmodule Client.List do
           response.body["error"]
       end
     else
-      {:error, reason} -> %{error: reason}
+      {:error, reason} -> %{"error" => reason}
     end
   end
 end
