@@ -92,8 +92,7 @@ defmodule TodoApi.Todos do
       else
         _ ->
           # update the todo priority based on the latest count
-          updated_todo_map =
-            Map.put(attrs, :priority, Enum.count(list.todos) + 1) |> key_to_atom()
+          updated_todo_map = Map.put(attrs, :priority, Enum.count(list.todos) + 1)
 
           list
           |> Ecto.build_assoc(:todos)
@@ -185,16 +184,6 @@ defmodule TodoApi.Todos do
   end
 
   ######################################################################
-
-  defp key_to_atom(map) do
-    Enum.reduce(map, %{}, fn
-      # String.to_existing_atom saves us from overloading the VM by
-      # creating too many atoms. It'll always succeed because all the fields
-      # in the database already exist as atoms at runtime.
-      {key, value}, acc when is_atom(key) -> Map.put(acc, key, value)
-      {key, value}, acc when is_binary(key) -> Map.put(acc, String.to_existing_atom(key), value)
-    end)
-  end
 
   defp arrange_todos(%List{} = todo_list, %Todo{} = todo, proposed_priority_value, action_type) do
     case action_type do
