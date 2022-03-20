@@ -12,6 +12,10 @@ defmodule TodoApiWeb.SessionController do
       {:ok, conn} ->
         json(conn, %{
           data: %{
+            current_user: %{
+              email: conn.assigns.current_user.email,
+              id: conn.assigns.current_user.id
+            },
             access_token: conn.private.api_access_token,
             renewal_token: conn.private.api_renewal_token
           }
