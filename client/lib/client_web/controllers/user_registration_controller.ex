@@ -3,10 +3,8 @@ defmodule ClientWeb.UserRegistrationController do
 
   alias Client.Accounts
   alias Client.Accounts.User
-  alias ClientWeb.UserAuth
-
   alias Client.Registrations
-
+  alias ClientWeb.UserSessionController
   alias Ecto.Changeset
 
   def new(conn, _params) do
@@ -19,16 +17,10 @@ defmodule ClientWeb.UserRegistrationController do
       user_params
 
     case Registrations.register(email, password, password_confirmation) do
-      {:ok, session} ->
-        # {:ok, _} =
-        # Accounts.deliver_user_confirmation_instructions(
-        #   user,
-        #   &Routes.user_confirmation_url(conn, :edit, &1)
-        # )
-
+      {:ok, _session} ->
         conn
         |> put_flash(:info, "User created successfully.")
-        |> UserAuth.log_in_user(session)
+        |> UserSessionController.create(%{"user" => %{"email" => email, "password" => password}})
 
       {:error, reason} ->
         cond do

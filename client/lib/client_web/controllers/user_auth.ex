@@ -41,12 +41,11 @@ defmodule ClientWeb.UserAuth do
     case Map.has_key?(session, "access_token") do
       true ->
         token = session["access_token"]
-        current_user = Map.put(session["current_user"], "expired_at", now() + @max_age)
 
         conn
         |> renew_session()
         |> put_session(:user_token, token)
-        |> put_session(:current_user, current_user)
+        |> put_session(:current_user, session["current_user"])
         |> put_session(:live_socket_id, "users_sessions:#{Base.url_encode64(token)}")
         |> maybe_write_remember_me_cookie(token, params)
         |> redirect(to: signed_in_path(conn))
@@ -54,10 +53,6 @@ defmodule ClientWeb.UserAuth do
       false ->
         {:error, session}
     end
-  end
-
-  defp now do
-    DateTime.utc_now() |> DateTime.to_unix()
   end
 
   defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
