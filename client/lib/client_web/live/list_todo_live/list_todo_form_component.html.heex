@@ -1,0 +1,32 @@
+<div>
+  <h2><%= @title %></h2>
+
+  <.form
+    let={f}
+    for={@todo_changeset}
+    id="todo-form"
+    phx-target={@myself}
+    phx-submit="save">
+  
+    <%= label f, :title %>
+    <%= text_input f, :title %>
+    <%= error_tag f, :title %>
+
+    <%= label f, :description %>
+    <%= text_input f, :description %>
+    <%= error_tag f, :description %>
+
+    <%= label f, :priority %>
+    <%= number_input f, :priority %>
+    <%= error_tag f, :priority %>
+
+    <%= label f, :is_done %>
+    <%= checkbox f, :is_done %>
+    <%= error_tag f, :is_done %>
+
+    <div>
+      <%= submit "Save", phx_disable_with: "Saving..." %>
+    </div>
+  </.form>
+</div>
+

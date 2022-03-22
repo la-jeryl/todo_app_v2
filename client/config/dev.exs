@@ -5,7 +5,7 @@ config :client, Client.Repo,
   username: "jeryl",
   password: "testing",
   hostname: "localhost",
-  database: "client_dev",
+  database: "client_dev_5",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
@@ -18,19 +18,14 @@ config :client, Client.Repo,
 config :client, ClientWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4040],
+  http: [ip: {127, 0, 0, 1}, port: 4050],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "XzAiJfi8fmvEgPzqy/7yMCmmX6iHQxF/kqHgweOuuyuJ3DtQqGxi8WG5fBBr5SUC",
+  secret_key_base: "6bYfDEv5qcA4v8RpWLnlFK/8Ex16YtR2tbwPEhMTHA//UGGLNwgZv5qtdO1jPL52",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    sass: {
-      DartSass,
-      :install_and_run,
-      [:default, ~w(--embed-source-map --source-map-urls=absolute --watch)]
-    }
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
   ]
 
 # ## SSL Support

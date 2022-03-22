@@ -6,17 +6,24 @@ defmodule Client.Registrations do
 
   def register(email, password, password_confirmation) do
     with true <- password == password_confirmation,
-         {:ok, response} <- post("/registration", %{user: %{email: email, password: password}}) do
+         {:ok, response} <-
+           post("/registration", %{
+             user: %{
+               email: email,
+               password: password,
+               password_confirmation: password_confirmation
+             }
+           }) do
       case Map.has_key?(response.body, "data") do
         true ->
-          response.body["data"]
+          {:ok, response.body["data"]}
 
         false ->
-          response.body["error"]
+          {:error, response.body["error"]}
       end
     else
-      false -> %{"error" => "Passwords do not match"}
-      {:error, reason} -> %{"error" => reason}
+      false -> {:error, "Passwords do not match"}
+      {:error, reason} -> {:error, reason}
     end
   end
 end

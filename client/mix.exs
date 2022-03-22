@@ -33,6 +33,7 @@ defmodule Client.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bcrypt_elixir, "~> 2.0"},
       {:phoenix, "~> 1.6.6"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
@@ -49,7 +50,6 @@ defmodule Client.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:dart_sass, "~> 0.4", runtime: Mix.env() == :dev},
       {:tesla, "~> 1.4"},
       {:hackney, "~> 1.17"}
     ]
@@ -67,11 +67,7 @@ defmodule Client.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.deploy": [
-        "esbuild default --minify",
-        "sass default --no-source-map --style=compressed",
-        "phx.digest"
-      ]
+      "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]
   end
 end

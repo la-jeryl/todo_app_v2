@@ -1,13 +1,22 @@
 defmodule Client.Lists.List do
-  defstruct [:list_name]
-  @types %{list_name: :string}
-
-  alias Client.Lists.List
+  use Ecto.Schema
   import Ecto.Changeset
 
-  def changeset(%List{} = list_body, attrs) do
-    {list_body, @types}
-    |> cast(attrs, Map.keys(@types))
-    |> validate_required([:list_name])
+  # alias Client.Todos.Todo
+
+  schema "lists" do
+    field :list_name, :string
+    field :user_id, :integer
+    # has_many(:todos, Todo, on_replace: :delete)
+
+    timestamps()
+  end
+
+  @doc false
+  def changeset(list, attrs) do
+    list
+    |> cast(attrs, [:user_id, :list_name])
+    # |> cast_assoc(:todos)
+    |> validate_required([:user_id, :list_name])
   end
 end

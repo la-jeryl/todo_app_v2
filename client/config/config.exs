@@ -15,7 +15,7 @@ config :client, ClientWeb.Endpoint,
   url: [host: "localhost"],
   render_errors: [view: ClientWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Client.PubSub,
-  live_view: [signing_salt: "qh+KICnh"]
+  live_view: [signing_salt: "LcOg6JC/"]
 
 # Configures the mailer
 #
@@ -39,13 +39,6 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
-config :dart_sass,
-  version: "1.49.9",
-  default: [
-    args: ~w(css/app.scss ../priv/static/assets/app.css),
-    cd: Path.expand("../assets", __DIR__)
-  ]
-
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
@@ -54,7 +47,6 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-# Tesla with hackney as adapter
 config :tesla, adapter: Tesla.Adapter.Hackney
 
 # Import environment specific config. This must remain at the bottom

@@ -1,6 +1,8 @@
 defmodule ClientWeb.Router do
   use ClientWeb, :router
 
+  import ClientWeb.UserAuth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,6 +10,7 @@ defmodule ClientWeb.Router do
     plug :put_root_layout, {ClientWeb.LayoutView, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
   end
 
   pipeline :api do
@@ -17,8 +20,7 @@ defmodule ClientWeb.Router do
   scope "/", ClientWeb do
     pipe_through :browser
 
-    live "/", View.TodoListLive, :index
-    # get "/", PageController, :index
+    get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.
@@ -53,5 +55,36 @@ defmodule ClientWeb.Router do
 
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+
+  ## Authentication routes
+
+  scope "/", ClientWeb do
+    pipe_through [:browser, :redirect_if_user_is_authenticated]
+
+    get "/users/register", UserRegistrationController, :new
+    post "/users/register", UserRegistrationController, :create
+    get "/users/log_in", UserSessionController, :new
+    post "/users/log_in", UserSessionController, :create
+  end
+
+  scope "/", ClientWeb do
+    pipe_through [:browser, :require_authenticated_user]
+    live "/lists", ListLive.Index, :index
+    live "/lists/new", ListLive.Index, :new
+    live "/lists/:id/edit", ListLive.Index, :edit
+
+    live "/lists/:id", ListLive.Show, :show
+    live "/lists/:id/show/edit", ListLive.Show, :edit
+
+    live "/lists/:list_id/todos", ListTodoLive.Index, :index
+    live "/lists/:list_id/todos/new", ListTodoLive.Index, :new
+    live "/lists/:list_id/todos/:todo_id/edit", ListTodoLive.Index, :edit
+  end
+
+  scope "/", ClientWeb do
+    pipe_through [:browser]
+
+    delete "/users/log_out", UserSessionController, :delete
   end
 end

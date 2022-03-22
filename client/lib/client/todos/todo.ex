@@ -1,13 +1,25 @@
 defmodule Client.Todos.Todo do
-  defstruct [:title, :description, :priority, :is_done]
-  @types %{title: :string, description: :string, priority: :integer, is_done: :boolean}
-
-  alias Client.Todos.Todo
+  use Ecto.Schema
   import Ecto.Changeset
 
-  def changeset(%Todo{} = todo_body, attrs) do
-    {todo_body, @types}
-    |> cast(attrs, Map.keys(@types))
-    |> validate_required([:title])
+  # alias Client.Lists.List
+
+  schema "todos" do
+    field :title, :string
+    field :description, :string
+    field :is_done, :boolean, default: false
+    field :priority, :integer
+    # belongs_to(:list, List)
+
+    timestamps()
+  end
+
+  @doc false
+  def changeset(todo, attrs) do
+    todo
+    |> cast(attrs, [:priority, :title, :description, :is_done])
+    |> validate_required([:title, :is_done])
+
+    # |> assoc_constraint(:list)
   end
 end

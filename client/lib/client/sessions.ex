@@ -14,13 +14,13 @@ defmodule Client.Sessions do
            }) do
       case Map.has_key?(response.body, "data") do
         true ->
-          response.body["data"]
+          {:ok, response.body["data"]}
 
         false ->
-          response.body["error"]
+          {:error, response.body["error"]}
       end
     else
-      {:error, reason} -> %{"error" => reason}
+      {:error, reason} -> {:error, reason}
     end
   end
 
@@ -30,13 +30,13 @@ defmodule Client.Sessions do
     with {:ok, response} <- post(client, "/session/renew", %{}) do
       case Map.has_key?(response.body, "data") do
         true ->
-          response.body["data"]
+          {:ok, response.body["data"]}
 
         false ->
-          response.body["error"]
+          {:error, response.body["error"]}
       end
     else
-      {:error, reason} -> %{"error" => reason}
+      {:error, reason} -> {:error, reason}
     end
   end
 
@@ -46,13 +46,13 @@ defmodule Client.Sessions do
     with {:ok, response} <- delete(client, "/session") do
       case Map.has_key?(response.body, "data") do
         true ->
-          %{"message" => "User logged out"}
+          {:ok, %{"message" => "User logged out"}}
 
         false ->
-          response.body["error"]
+          {:error, response.body["error"]}
       end
     else
-      {:error, reason} -> %{"error" => reason}
+      {:error, reason} -> {:error, reason}
     end
   end
 end
