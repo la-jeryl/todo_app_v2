@@ -37,71 +37,67 @@ defmodule ClientWeb.ListTodoLive.ListTodoFormComponent do
   end
 
   defp save_todo(socket, :edit, todo_params) do
-    if todo_params["priority"] == "" do
-      {:noreply,
-       socket
-       |> put_flash(:error, "Priority should not be empty.")
-       |> push_redirect(to: "/lists/#{socket.assigns.id}/todos")}
-    else
-      todo_body = %{
-        title: todo_params["title"],
-        description: todo_params["description"],
-        priority: todo_params["priority"] |> String.to_integer(),
-        is_done: todo_params["is_done"] |> String.to_existing_atom()
-      }
-
-      case Todos.update_todo(
+    with true <- todo_params["priority"] != "",
+         {:ok, _todo} <-
+           Todos.update_todo(
              socket.assigns.token,
              socket.assigns.id |> String.to_integer(),
              socket.assigns.todo.id,
              %{
-               todo: todo_body
+               todo: %{
+                 title: todo_params["title"],
+                 description: todo_params["description"],
+                 priority: todo_params["priority"] |> String.to_integer(),
+                 is_done: todo_params["is_done"] |> String.to_existing_atom()
+               }
              }
            ) do
-        {:ok, _todo} ->
-          {:noreply,
-           socket
-           |> put_flash(:info, "Todo updated successfully")
-           |> push_redirect(to: "/lists/#{socket.assigns.id}/todos")}
+      {:noreply,
+       socket
+       |> put_flash(:info, "Todo updated successfully")
+       |> push_redirect(to: "/lists/#{socket.assigns.id}/todos")}
+    else
+      false ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Priority should not be empty.")
+         |> push_redirect(to: "/lists/#{socket.assigns.id}/todos")}
 
-        {:error, reason} ->
-          {:noreply,
-           socket
-           |> put_flash(:error, "#{reason["error"]}")
-           |> push_redirect(to: "/lists/#{socket.assigns.id}/todos")}
-      end
+      {:error, reason} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "#{reason["error"]}")
+         |> push_redirect(to: "/lists/#{socket.assigns.id}/todos")}
     end
   end
 
   defp save_todo(socket, :new, todo_params) do
-    if todo_params["priority"] == "" do
+    with true <- todo_params["priority"] != "",
+         {:ok, _todo_item} <-
+           Todos.create_todo(socket.assigns.token, String.to_integer(socket.assigns.id), %{
+             todo: %{
+               title: todo_params["title"],
+               description: todo_params["description"],
+               priority: todo_params["priority"] |> String.to_integer(),
+               is_done: todo_params["is_done"] |> String.to_existing_atom()
+             }
+           }) do
       {:noreply,
        socket
-       |> put_flash(:error, "Priority should not be empty.")
+       |> put_flash(:info, "Todo created successfully")
        |> push_redirect(to: "/lists/#{socket.assigns.id}/todos")}
     else
-      todo_body = %{
-        title: todo_params["title"],
-        description: todo_params["description"],
-        priority: todo_params["priority"] |> String.to_integer(),
-        is_done: todo_params["is_done"] |> String.to_existing_atom()
-      }
+      false ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Priority should not be empty.")
+         |> push_redirect(to: "/lists/#{socket.assigns.id}/todos")}
 
-      case Todos.create_todo(socket.assigns.token, String.to_integer(socket.assigns.id), %{
-             todo: todo_body
-           }) do
-        {:ok, _todo_item} ->
-          {:noreply,
-           socket
-           |> put_flash(:info, "Todo created successfully")
-           |> push_redirect(to: "/lists/#{socket.assigns.id}/todos")}
-
-        {:error, reason} ->
-          {:noreply,
-           socket
-           |> put_flash(:error, "#{reason["error"]}")
-           |> push_redirect(to: "/lists/#{socket.assigns.id}/todos")}
-      end
+      {:error, reason} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "#{reason["error"]}")
+         |> push_redirect(to: "/lists/#{socket.assigns.id}/todos")}
     end
   end
 end
