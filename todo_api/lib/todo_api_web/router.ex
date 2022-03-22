@@ -26,6 +26,38 @@ defmodule TodoApiWeb.Router do
     end
   end
 
+  scope "/api/swagger" do
+    forward "/", PhoenixSwagger.Plug.SwaggerUI,
+      otp_app: :todo_api,
+      swagger_file: "swagger.json"
+  end
+
+  def swagger_info do
+    %{
+      info: %{
+        version: "1.0",
+        title: "Todo Api App",
+        description: "API Documentation for Todo API App"
+      },
+      securityDefinitions: %{
+        Headers: %{
+          type: "access_token",
+          name: "Authorization",
+          description: "API Token must be provided via `Authorization: Headers ` header",
+          in: "header"
+        }
+      },
+      consumes: ["application/json"],
+      produces: ["application/json"],
+      tags: [
+        %{name: "Registration", description: "Registration resources"},
+        %{name: "Session", description: "Session resources"},
+        %{name: "Lists", description: "Lists resources"},
+        %{name: "Todos", description: "Todos resources"}
+      ]
+    }
+  end
+
   # Enables the Swoosh mailbox preview in development.
   #
   # Note that preview only shows emails that were sent by the same

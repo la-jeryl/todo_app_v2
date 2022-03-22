@@ -1,0 +1,43 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "definitions": {},
+  "host": "localhost:4000",
+  "info": {
+    "description": "API Documentation for Todo API App",
+    "title": "Todo Api App",
+    "version": "1.0"
+  },
+  "paths": {},
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "Headers": {
+      "description": "API Token must be provided via `Authorization: Headers ` header",
+      "in": "header",
+      "name": "Authorization",
+      "type": "access_token"
+    }
+  },
+  "swagger": "2.0",
+  "tags": [
+    {
+      "description": "Registration resources",
+      "name": "Registration"
+    },
+    {
+      "description": "Session resources",
+      "name": "Session"
+    },
+    {
+      "description": "Lists resources",
+      "name": "Lists"
+    },
+    {
+      "description": "Todos resources",
+      "name": "Todos"
+    }
+  ]
+}
