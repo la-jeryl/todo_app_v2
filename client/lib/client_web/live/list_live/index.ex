@@ -64,6 +64,13 @@ defmodule ClientWeb.ListLive.Index do
          |> assign(:lists, list_lists(token))
          |> put_flash(:info, "#{response["message"]}")
          |> push_redirect(to: "/lists")}
+
+      {:error, response} ->
+        {:noreply,
+         socket
+         |> assign(:todos, list_lists(token))
+         |> put_flash(:error, "#{response["message"]}")
+         |> push_redirect(to: "/lists")}
     end
   end
 

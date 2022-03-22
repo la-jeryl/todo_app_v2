@@ -68,6 +68,41 @@ defmodule ClientWeb.ListTodoLive.Index do
          |> assign(:todos, list_todos(token, list_id))
          |> put_flash(:info, "#{response["message"]}")
          |> push_redirect(to: "/lists/#{list_id}/todos")}
+
+      {:error, reason} ->
+        {:noreply,
+         socket
+         |> assign(:todos, list_todos(token, list_id))
+         |> put_flash(:error, "#{reason["message"]}")
+         |> push_redirect(to: "/lists/#{list_id}/todos")}
+    end
+  end
+
+  @impl true
+  def handle_event(
+        "dropped",
+        %{"draggableIndex" => new_index, "draggedId" => todo_id} = _params,
+        socket
+      ) do
+    token = socket.assigns.token
+    list_id = String.to_integer(socket.assigns.list_id)
+
+    case Todos.update_todo(token, list_id, String.to_integer(todo_id), %{
+           todo: %{priority: new_index + 1}
+         }) do
+      {:ok, _response} ->
+        {:noreply,
+         socket
+         |> assign(:todos, list_todos(token, list_id))
+         |> put_flash(:info, "Todo updated successfully")
+         |> push_redirect(to: "/lists/#{list_id}/todos")}
+
+      {:error, reason} ->
+        {:noreply,
+         socket
+         |> assign(:todos, list_todos(token, list_id))
+         |> put_flash(:error, "#{reason["message"]}")
+         |> push_redirect(to: "/lists/#{list_id}/todos")}
     end
   end
 

@@ -12,7 +12,7 @@
 </.modal>
 <% end %>
 
-<table>
+<table phx-hook="Drag" id="drag">
   <thead>
     <tr>
       <th>Priority</th>
@@ -22,9 +22,9 @@
       <th></th>
     </tr>
   </thead>
-  <tbody id="todos">
+  <tbody id="todos" class="dropzone">
     <%= for todo <- @todos do %>
-    <tr id={"todo-#{todo.id}"}>
+    <tr id={"#{todo.id}"} draggable="true" class="draggable">
       <td><%= todo.priority %></td>
       <td><%= todo.title %></td>
       <td><%= todo.description %></td>
