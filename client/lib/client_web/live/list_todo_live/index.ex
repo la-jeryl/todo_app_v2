@@ -20,7 +20,7 @@ defmodule ClientWeb.ListTodoLive.Index do
       {:error, reason} ->
         {:ok,
          socket
-         |> put_flash(:error, "Login again. #{reason["message"]}")
+         |> put_flash(:error, "Login again. #{reason["message"]}.")
          |> redirect(to: "/")}
     end
   end
