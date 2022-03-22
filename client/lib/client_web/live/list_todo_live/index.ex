@@ -6,8 +6,6 @@ defmodule ClientWeb.ListTodoLive.Index do
 
   @impl true
   def mount(params, session, socket) do
-    # IO.inspect(socket)
-
     case Todos.list_todos(session["user_token"], params["list_id"]) do
       {:ok, todos} ->
         {:ok,

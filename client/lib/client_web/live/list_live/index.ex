@@ -6,8 +6,6 @@ defmodule ClientWeb.ListLive.Index do
 
   @impl true
   def mount(_params, session, socket) do
-    IO.inspect(session)
-
     case Lists.list_lists(session["user_token"]) do
       {:ok, lists} ->
         {:ok,
@@ -58,7 +56,6 @@ defmodule ClientWeb.ListLive.Index do
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     token = socket.assigns.token
-    IO.inspect(socket)
 
     case Lists.delete_list(token, id) do
       {:ok, response} ->
