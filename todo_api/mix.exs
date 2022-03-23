@@ -45,7 +45,8 @@ defmodule TodoApi.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:pow, "~> 1.0.26"},
       {:phoenix_swagger, "~> 0.8"},
-      {:ex_json_schema, "~> 0.5"}
+      {:ex_json_schema, "~> 0.5"},
+      {:hackney, "~> 1.9"}
     ]
   end
 
