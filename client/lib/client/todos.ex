@@ -1,8 +1,9 @@
 defmodule Client.Todos do
   use Tesla
 
-  plug Tesla.Middleware.BaseUrl, "http://localhost:4000/api"
-  plug Tesla.Middleware.JSON
+  # plug Tesla.Middleware.BaseUrl, "http://localhost:4000/api"
+  plug(Tesla.Middleware.BaseUrl, "192.168.64.2:4000/api")
+  plug(Tesla.Middleware.JSON)
 
   alias Client.Helpers
 
