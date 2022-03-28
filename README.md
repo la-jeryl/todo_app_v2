@@ -50,7 +50,7 @@ Docker is now working.
 4. Open a separate tab for todo_client and client directories, and then run the following command:
   - docker-compose exec todoclient mix ecto.setup
   - docker-compose exec todoapi mix ecto.setup
-  * todoclient and todoapi are sthe name of the services in the respective docker-compose.yml files.
+  Note: todoclient and todoapi are the name of the services in the respective docker-compose.yml files.
 
 Optional Steps in case client is not able to communicate with todo_api:
 1. While the docker containers are up, run the command below and get the container ids
